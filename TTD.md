@@ -26,17 +26,20 @@ Legend: `[ ]` chưa làm · `[~]` đang làm · `[x]` xong · `[!]` bị chặn/
 
 ---
 
-## Phase 1 — Scaffold nền tảng + Git + CLAUDE.md skeleton
+## Phase 1 — Scaffold nền tảng + Git + CLAUDE.md skeleton ✅ DoD ĐẠT
 
-- [ ] Scaffold từ **Payload website template**: `pnpm create payload-app -t website` (db: postgres → Neon) *[BP §4]*
-- [ ] `git init` + commit khởi tạo (Conventional Commits) + `.gitignore` (bỏ `.env*`, `.next`, `node_modules`) *[BP §6.6]*
-- [ ] **Tạo `CLAUDE.md` skeleton ngay** (sẽ lớn dần): stack, version lock, lệnh, vùng lõi-vs-mở-rộng *[BP §6.6]*
-- [ ] **Cài 3 skill ngoài cốt lõi** (xem Phụ lục F.1) + ghi lệnh cài vào `CLAUDE.md`: shadcn/ui, Tailwind v4+shadcn (jezweb, adapt cho Next.js), GSAP skills
-- [ ] `package.json`: khóa version cứng + scripts `dev` / `build` / `payload` / **`generate:types`** / **`generate:importmap`** / `seed` *[BP §9]*
-- [ ] Khóa Node (`.nvmrc` / `engines`) + chuẩn hóa pnpm *[BP §2.6]*
-- [ ] Rà soát cây thư mục template, ánh xạ về cấu trúc blueprint (`(marketing)/`, `(payload)/`, `collections/`, `blocks/`, `components/`, `lib/`, `styles/`, `cms/`) *[BP §3]*
+- [x] Scaffold từ **Payload website template** (degit tag `v3.85.1`, không qua create-payload-app vì shell non-TTY) — db postgres → Neon *[BP §4]*
+- [x] `git init` (branch `main`) + commit `80354e3` + `.gitignore` (bỏ `.env`, `.next`, `node_modules`); origin = `phutruong-dev/marclie-cms` *[BP §6.6]*
+- [x] **`CLAUDE.md` skeleton** (sẽ lớn dần): stack, version lock, lệnh, lõi-vs-mở-rộng, vị trí skill *[BP §6.6]*
+- [x] **Cài 3 skill ngoài cốt lõi** (Phụ lục F.1): shadcn (`.agents/skills/`), GSAP ×8 (`.agents/skills/`), tailwind-theme-builder/jezweb (`.claude/skills/`) — lệnh ghi trong `CLAUDE.md`
+- [x] `package.json`: version ghim cứng (Payload 3.85.1) + scripts `dev`/`build`/`payload`/`generate:types`/`generate:importmap` (template có sẵn; **chưa có `seed` script** — template dùng route `/next/seed` + SeedButton) *[BP §9]*
+- [x] Khóa Node (`.nvmrc`=24) + `.gitattributes` (LF) — engines đã có sẵn trong package.json *[BP §2.6]*
+- [x] Cây thư mục template: dùng `(frontend)` thay `(marketing)` — sẽ ánh xạ/đổi tên ở phase sau nếu cần *[BP §3]*
 
-**DoD:** `pnpm dev` chạy; vào `/admin` thấy admin UI; `pnpm generate:types` sinh `payload-types.ts`; git có commit đầu.
+**DoD:** ✅ HOÀN TẤT. `pnpm dev` chạy (Next 16.2.6); `/admin`→200, `/admin/login`→200, `/`→200; schema push lên Neon; admin user đầu đã tạo; `payload-types.ts` đã regenerate cho Postgres. CLAUDE.md + 3 skill + `.nvmrc`/`.gitattributes` xong.
+
+> 🎁 Template đã kèm sẵn (giảm việc Phase 4–7): blocks + `RenderBlocks.tsx` (registry), collections + access control, plugins (seo/redirects/nested-docs/search/form-builder), Theme light/dark, seed endpoint, RichText Lexical, Playwright + Vitest.
+> 🔐 **Nhắc:** Neon connection string đã lộ trong chat → rotate password ở Neon Console sau khi xong test.
 
 ---
 
