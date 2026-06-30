@@ -9,7 +9,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
   previousDoc,
   req: { payload, context },
 }) => {
-  if (!context.disableRevalidate) {
+  if (!context.disableRevalidate && process.env.DISABLE_REVALIDATE !== 'true') {
     if (doc._status === 'published') {
       const path = `/posts/${doc.slug}`
 
@@ -33,7 +33,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 }
 
 export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate) {
+  if (!context.disableRevalidate && process.env.DISABLE_REVALIDATE !== 'true') {
     const path = `/posts/${doc?.slug}`
 
     revalidatePath(path)

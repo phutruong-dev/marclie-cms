@@ -96,17 +96,21 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 6 — Vertical slice: end-to-end Home page *(prove the whole pipeline)*
+## Phase 6 — Vertical slice: end-to-end Home page *(prove the whole pipeline)* ✅ DONE
 
 > Goal: **don't build all 5 pages yet**. Build one page end-to-end to lock the pipeline; the other 4 are just content (Phase 10).
 
-- [ ] `(marketing)/layout.tsx` — Header/Footer read from `Navigation`
-- [ ] **Home** page pulls real content from the CMS (block-based)
-- [ ] Contact form: **`plugin-form-builder` defines the form** → frontend renders with **React Hook Form + Zod** → submit saves to Submissions (see Appendix D for roles)
-- [ ] **Minimal seed**: admin user + sample Home page + Navigation + SiteSettings (`pnpm seed` script)
-- [ ] `next/image` **remotePatterns for Vercel Blob** (images won't load otherwise)
+- [x] Frontend layout (`(frontend)/layout.tsx`) reads Header/Footer globals — template provides it
+- [x] **Home** page pulls real content from the CMS (block-based) — seeded `home` page renders (`/` 200)
+- [x] Contact form: `plugin-form-builder` form + frontend `FormBlock` (RHF) → submit saves to Submissions (verified: POST `/api/form-submissions` → id 1)
+- [x] **`pnpm seed` script** (`src/seed.ts`, tsx): resets + loads demo content (Home, Contact, posts, nav, media). Verified: empty DB → 2 pages / 3 posts / 1 form / 4 media
+- [~] `next/image` **remotePatterns for Vercel Blob** — deferred to Phase 12 (Blob not configured yet; local media works via `/api/media`)
 
-**DoD:** Home shows CMS content; edit + publish in admin → page updates (prep for Phase 7); form submit saves to DB; `pnpm seed` rebuilds from an empty DB.
+**Fix applied:** template revalidate hooks crashed during CLI seed (`revalidatePath` needs Next context, and some seed ops omit `disableRevalidate`). Added an env guard `DISABLE_REVALIDATE` to all revalidate hooks; `pnpm seed` sets it.
+
+**DoD:** ✅ Home shows CMS content (`/` 200, `home` page seeded); `/contact` 200; form submit saved (submission id 1); `pnpm seed` rebuilds from empty DB. Publish→revalidate flow exercised in Phase 7.
+
+> 🏷️ Phase 8: seeded demo content (`src/endpoints/seed/*`) still uses "Payload" branding/title → rebrand with the broader branding pass.
 
 ---
 

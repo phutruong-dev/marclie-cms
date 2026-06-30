@@ -32,6 +32,7 @@ pnpm typecheck           # tsc --noEmit
 pnpm generate:types      # generate src/payload-types.ts from config
 pnpm generate:importmap  # generate the admin import map
 pnpm payload             # CMS engine CLI (migrate, etc.)
+pnpm seed                # reset + load demo content (tsx; sets DISABLE_REVALIDATE=true). Stop the dev server first.
 pnpm test                # test:int + test:e2e
 pnpm test:int            # vitest
 pnpm test:e2e            # playwright

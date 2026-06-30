@@ -34,6 +34,7 @@
 | `app/(payload)/` | **CMS admin + API — core, do not edit.** `admin/[[...segments]]`, `api/`, GraphQL. |
 | `payload.config.ts` | ⭐ Central CMS config: db adapter, collections, globals, plugins, editor. |
 | `env.ts` | Env schema (zod + @t3-oss/env-nextjs). |
+| `seed.ts` | CLI seed runner (`pnpm seed`) — loads demo content via tsx. |
 | `collections/` | CMS collections: `Pages`, `Posts`, `Projects` (portfolio), `Categories`, `Media`, `Users`. |
 | `blocks/` | Layout-builder blocks + their React components. `RenderBlocks.tsx` = block registry. |
 | `heros/` | Hero variants (`HighImpact`, `MediumImpact`, `LowImpact`, `PostHero`) + `RenderHero.tsx`. |
