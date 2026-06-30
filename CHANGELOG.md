@@ -10,6 +10,7 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 - Scaffolded Marclie CMS from the Payload website template (pinned engine `3.85.1`): Next.js 16.2.6, React 19.2.6, Tailwind v4, Postgres.
 - `docs/theming.md` — theming guide (token file, Tailwind v4 four-step pattern, dark mode via `data-theme`, how to rebrand).
 - `Projects` collection (portfolio): case studies with gallery, client/year/url, categories, SEO, drafts/versions.
+- `Features` and `Gallery` layout blocks (config + component), registered in the block registry and the Pages layout.
 - Project docs: `CLAUDE.md`, `TTD.md`, `MAP.md`, `CHANGELOG.md`, ADRs `0001` (stack & versions) and `0002` (eslint flat config & react-hooks).
 - Environment validation: `src/env.ts` (`@t3-oss/env-nextjs` + zod), enforced in `next.config.ts`.
 - `typecheck` script (`tsc --noEmit`).

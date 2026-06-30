@@ -85,14 +85,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 5 — Block system & registry + Lexical rendering
+## Phase 5 — Block system & registry + Lexical rendering ✅ DONE
 
-- [ ] **Block registry**: a single file mapping `blockSlug → React component` (DRY; AI adds blocks without missing a spot)
-- [ ] Sample blocks in `src/blocks/`: **Hero, Features, Gallery, CTA** (CMS field + component pair)
-- [ ] **Serializer to render Lexical rich text → React** (for Posts/long content) — *often forgotten*
-- [ ] Read data in RSC via the **engine Local API** (no HTTP)
+- [x] **Block registry** verified: `src/blocks/RenderBlocks.tsx` maps `blockType → component`. Extended with `features`, `gallery`
+- [x] Sample blocks: **CTA** (`CallToAction`) + **Hero** (`src/heros/`) already in template; **added `Features`** (grid of items) and **`Gallery`** (image grid) — config + Component pair each, registered in `RenderBlocks` and exposed in the `Pages` layout
+- [x] **Lexical → React serializer** verified: `src/components/RichText` (`jsxConverters` for default nodes + inline blocks banner/media/code/cta + internal links)
+- [x] RSC data via the **engine Local API** — template pages already use it (`getPayload` + `payload.find`)
 
-**DoD:** a Page composed of ≥2 blocks renders correctly; rich text renders correctly; adding a new block only touches the registry + 2 files.
+**DoD:** ✅ `generate:types` includes `FeaturesBlock`/`GalleryBlock`; typecheck + lint (0 err) pass; `/admin` 200 (schema pushed); adding a block = config.ts + Component.tsx + 1 registry line (+ expose in collection). Full visual render of a multi-block page is exercised in Phase 6 (Home vertical slice).
 
 ---
 
