@@ -1,0 +1,19 @@
+# Tùy chọn OFFLINE — mặc định dự án dùng Neon (Postgres) qua DATABASE_URL.
+# Chỉ dùng compose này khi cần Postgres local hoàn toàn offline.
+# Khi đó đặt trong .env:
+#   DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/marclie
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: marclie
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
