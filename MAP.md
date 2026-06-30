@@ -12,6 +12,7 @@
 | `TTD.md` | Task tracking document (execution plan, phase by phase). |
 | `CHANGELOG.md` | Notable changes (Keep a Changelog). |
 | `docs/adr/` | Architecture Decision Records (numbered). |
+| `docs/theming.md` | Theming guide: tokens, dark mode, rebrand. |
 | `README.md` | Engine/template readme (from the base template). |
 | `.env.example` | Environment variable template. |
 | `.github/workflows/ci.yml` | CI: lint + typecheck on push/PR. |
@@ -29,7 +30,7 @@
 
 | Path | Responsibility |
 |---|---|
-| `app/(frontend)/` | Public marketing site: `page.tsx` (home), `[slug]`, `posts/`, `search/`, sitemaps, preview routes, `globals.css`. |
+| `app/(frontend)/` | Public marketing site: `page.tsx` (home), `[slug]`, `posts/`, `search/`, sitemaps, preview routes. `globals.css` = **design tokens** (Tailwind v4 `@theme`; see `docs/theming.md`). |
 | `app/(payload)/` | **CMS admin + API — core, do not edit.** `admin/[[...segments]]`, `api/`, GraphQL. |
 | `payload.config.ts` | ⭐ Central CMS config: db adapter, collections, globals, plugins, editor. |
 | `env.ts` | Env schema (zod + @t3-oss/env-nextjs). |

@@ -56,14 +56,17 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 3 — Tailwind v4 + Design tokens + Light/Dark
+## Phase 3 — Tailwind v4 + Design tokens + Light/Dark ✅ DONE
 
-- [ ] Configure **Tailwind v4** (`@import "tailwindcss"`); shadcn/ui base via the v4 CLI — note: template already on v4, so mostly verify
-- [ ] Define **design tokens via `@theme`** (light/dark pairs: `--background`, `--foreground`, radius, font…) — Appendix E; locate the template's token file
-- [ ] Dark mode v4: `@custom-variant dark (&:is(.dark *))` + theme provider (toggle + respect `prefers-color-scheme`)
-- [ ] Document: **"rebrand = change tokens"**
+- [x] **Tailwind v4** — verified: template uses `@import "tailwindcss"` + `@config` in `src/app/(frontend)/globals.css`; `components.json` wired for shadcn
+- [x] **Design tokens via `@theme`** — verified the full four-step pattern in `globals.css`: `:root` (light) + `[data-theme='dark']` (dark) oklch tokens → `@theme inline` mapping. Single token file: `globals.css` (template keeps tokens here, not `styles/theme.css`)
+- [x] **Dark mode** — driven by `[data-theme='dark']` attribute (NOT `.dark`); `InitTheme` no-flash script + `ThemeSelector` toggle, respects `prefers-color-scheme`
+- [x] **Documented** in `docs/theming.md` + `CLAUDE.md` ("rebrand = edit tokens"); fixed the `.dark` → `data-theme` note
+- [x] Brand tokens kept **neutral** (per-project decision for a reusable starter); rebrand path documented
 
-**DoD:** light/dark toggle works; changing one token shifts the whole site's tone; the CMS admin (separate SCSS) is unaffected.
+**DoD:** ✅ Verified in browser: switching `data-theme` light↔dark inverts the whole body bg/text (`--background` white↔near-black); tokens drive the site tone; admin (separate SCSS) unaffected. Visual screenshot of seeded content deferred to Phase 6; contrast audit to Phase 13.
+
+> 🏷️ Phase 8 note: page `<title>` still reads "Payload Website Template" → rebrand via SiteSettings/metadata.
 
 ---
 
