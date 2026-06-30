@@ -3,6 +3,9 @@
 > Bộ nhớ & quy ước dự án cho Claude/AI agent. **Đọc file này đầu mỗi phiên.**
 > Kế hoạch thực thi: `TTD.md`. Quyết định kiến trúc: `docs/adr/`. Định hướng gốc: `BLUEPRINT.md`.
 
+## ⚠️ QUY ƯỚC BẮT BUỘC — cập nhật CLAUDE.md
+**Sau khi hoàn tất MỖI task** (đổi stack, thêm/xóa script, đổi cấu trúc, thêm skill, đổi convention...), **kiểm tra lại file này và cập nhật ngay** nếu có gì lệch. CLAUDE.md lỗi thời sẽ làm AI hiểu sai dự án. Coi việc cập nhật CLAUDE.md là một phần của "định nghĩa hoàn thành" của task, không phải việc làm thêm. Đồng bộ luôn `TTD.md` (tick tiến độ) và `docs/adr/` (khi có quyết định mới).
+
 ## Dự án là gì
 Starter template **Marclie CMS**: marketing site + CMS trong **một** Next.js app (Payload chạy in-repo). Mỗi dự án mới = đổi nội dung + theme tokens, không đụng lõi.
 
