@@ -27,7 +27,7 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: true, // accessibility: every image must have alt text (WCAG)
     },
     {
       name: 'caption',

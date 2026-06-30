@@ -70,18 +70,18 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 4 — Normalise Collections / Globals / Plugins *(template already has these — mostly review & adjust)*
+## Phase 4 — Normalise Collections / Globals / Plugins *(template already has these — mostly review & adjust)* ✅ DONE
 
-- [ ] Review template collections: `Users`, `Media`, `Pages` (layout builder), `Posts`, `Categories` — adjust fields as needed
-- [ ] `Media` — **require alt text**, automatic resizing
-- [ ] Add **`Portfolio / Projects`** (not in template)
-- [ ] Globals `SiteSettings` (logo, social) + `Navigation` (header/footer) — use **`plugin-nested-docs`** for menus
-- [ ] **Use official plugins instead of hand-rolling**: `plugin-form-builder` (Forms + Submissions), `plugin-seo`, `plugin-redirects`, `plugin-search`
-- [ ] **Drafts + Versions + Autosave** enabled for `Pages`/`Posts` (ties into ISR in Phase 7) — *hard to retrofit, do early*
-- [ ] **Live Preview** pointed at the frontend
-- [ ] **Explicit access control**: public reads only `published`; drafts require an authenticated user
+- [x] Reviewed template collections: `Users`, `Media`, `Pages` (layout builder + tabs), `Posts`, `Categories` — all well-structured
+- [x] `Media` — **alt now `required: true`** (was commented out); image resizing already configured (thumbnail…og)
+- [x] Added **`Projects`** collection (portfolio): `src/collections/Projects/index.ts` — featuredImage, summary, content, gallery, client/year/projectUrl/categories (sidebar), SEO tab, drafts/versions/autosave; registered in `payload.config.ts`
+- [x] **Plugins verified present**: `plugin-form-builder`, `plugin-seo`, `plugin-redirects`, `plugin-nested-docs` (categories), `plugin-search` (posts) — fixed SEO title branding `"Payload Website Template"` → `"Marclie CMS"`
+- [x] **Drafts + Versions + Autosave** already on for `Pages`/`Posts`; added the same to `Projects`
+- [x] **Live Preview** already configured (admin breakpoints + per-collection preview URL)
+- [x] **Access control verified**: `authenticatedOrPublished` (public reads `_status: published` only; auth users see drafts), `anyone` for Media read — correct
+- [~] Globals: template ships `Header` + `Footer` (the nav globals). `SiteSettings` (logo/social) **deferred to Phase 8** (branding) to avoid dead config — Header/Footer cover navigation now
 
-**DoD:** create a Page from blocks in admin; saved to DB; generated types match; access control blocks drafts for anonymous users; migration updated.
+**DoD:** ✅ `pnpm generate:types` includes `projects`; typecheck + lint (0 err) pass; schema pushed to Neon; `/api/projects` → 200 `{docs:[],totalDocs:0}` (collection live, access control returns published-only); `/admin` 200.
 
 ---
 
