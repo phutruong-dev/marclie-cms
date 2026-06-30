@@ -1,9 +1,9 @@
 # TTD — Task Tracking Document
 
-> **Goal:** Scaffold the **Marclie CMS** starter (Next.js + CMS engine + Tailwind v4 + shadcn) from `BLUEPRINT.md` until it runs locally, deploys on Vercel, and becomes a GitHub Template.
+> **Goal:** Scaffold the **Marclie CMS** starter (Next.js + CMS engine + Tailwind v4 + shadcn) until it runs locally, deploys on Vercel, and becomes a GitHub Template.
 > **Execution philosophy:** Build the **engine first, content later**. Start from the base **`website` template** (which already ships maintained plugins/drafts/live-preview), then *own & rebrand* it instead of hand-building from scratch. Turn guardrails (lint/typecheck/CI/env) on **early** so all code — including AI-generated — is checked from the first commit.
 > **How to use:** Work phase by phase. Tick `[x]` when done. Each phase has a **Definition of Done (DoD)** — do not advance until the DoD is met.
-> **Source of truth:** `BLUEPRINT.md` (references in brackets, e.g. *[BP §2]*).
+> **Source of truth:** this file (`TTD.md`) + `docs/adr/` + `CLAUDE.md`. (The original `BLUEPRINT.md` strategy doc has been removed; its decisions are captured here and in the ADRs.)
 
 **Overall status:** Phase 0–2 done · Phase 3 next.
 
@@ -15,10 +15,10 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ## Phase 0 — Technical decisions & version lock *(settle before running commands)* ✅ DONE
 
-- [x] **Lock the compatibility trio**: **Next.js 16.2.6 · React 19.2.6 · engine 3.85.1** — verified: engine supports Next 16.2.6+, Node ≥20.9 *[BP §2 note, §10]*
-- [x] **Tailwind v4** — shadcn CLI for v4 + React 19; v4: `@import "tailwindcss"`, tokens via `@theme`, dark via `@custom-variant dark` (Appendix E). Confirmed the template already ships v4. *[BP §2, §6.5]*
-- [x] **DB adapter `@payloadcms/db-postgres`** pointed at Neon for both local and prod *[BP §9.5]*
-- [x] **Base scaffold: `website` template** *[BP §0 Path A, §4]*
+- [x] **Lock the compatibility trio**: **Next.js 16.2.6 · React 19.2.6 · engine 3.85.1** — verified: engine supports Next 16.2.6+, Node ≥20.9
+- [x] **Tailwind v4** — shadcn CLI for v4 + React 19; v4: `@import "tailwindcss"`, tokens via `@theme`, dark via `@custom-variant dark` (Appendix E). Confirmed the template already ships v4.
+- [x] **DB adapter `@payloadcms/db-postgres`** pointed at Neon for both local and prod
+- [x] **Base scaffold: `website` template**
 - [x] Tooling verified: Node 24.14.1 · pnpm 10.33 · git 2.53 · corepack 0.34.6
 - [x] Repo: **`git@github.com:phutruong-dev/marclie-cms.git`** — set as `origin` in Phase 1
 
@@ -28,13 +28,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ## Phase 1 — Foundation scaffold + Git + CLAUDE.md ✅ DONE
 
-- [x] Scaffold the **website template** (degit tag `v3.85.1`; `create-payload-app` needs a TTY → not used) — db postgres → Neon *[BP §4]*
-- [x] `git init` (branch `main`) + commit `80354e3` + `.gitignore` (`.env`, `.next`, `node_modules`); origin = `phutruong-dev/marclie-cms` *[BP §6.6]*
-- [x] **`CLAUDE.md`** (grows over time): stack, version lock, commands, core-vs-extension, skill locations *[BP §6.6]*
+- [x] Scaffold the **website template** (degit tag `v3.85.1`; `create-payload-app` needs a TTY → not used) — db postgres → Neon
+- [x] `git init` (branch `main`) + commit `80354e3` + `.gitignore` (`.env`, `.next`, `node_modules`); origin = `phutruong-dev/marclie-cms`
+- [x] **`CLAUDE.md`** (grows over time): stack, version lock, commands, core-vs-extension, skill locations
 - [x] **Install 3 core external skills** (Appendix F.1): shadcn (`.agents/skills/`), GSAP ×8 (`.agents/skills/`), tailwind-theme-builder/jezweb (`.claude/skills/`) — commands in `CLAUDE.md`
-- [x] `package.json`: hard-pinned versions (engine 3.85.1) + scripts `dev`/`build`/`payload`/`generate:types`/`generate:importmap` (from template; **no `seed` script yet** — template uses the `/next/seed` route + SeedButton) *[BP §9]*
-- [x] Lock Node (`.nvmrc`=24) + `.gitattributes` (LF) — engines already declared in package.json *[BP §2.6]*
-- [x] Template layout uses `(frontend)` instead of `(marketing)` — map/rename later if needed *[BP §3]*
+- [x] `package.json`: hard-pinned versions (engine 3.85.1) + scripts `dev`/`build`/`payload`/`generate:types`/`generate:importmap` (from template; **no `seed` script yet** — template uses the `/next/seed` route + SeedButton)
+- [x] Lock Node (`.nvmrc`=24) + `.gitattributes` (LF) — engines already declared in package.json
+- [x] Template layout uses `(frontend)` instead of `(marketing)` — map/rename later if needed
 
 **DoD:** ✅ `pnpm dev` runs (Next 16.2.6); `/admin`→200, `/admin/login`→200, `/`→200; schema pushed to Neon; first admin user created; `payload-types.ts` regenerated for Postgres. CLAUDE.md + 3 skills + `.nvmrc`/`.gitattributes` done.
 
@@ -42,64 +42,64 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 2 — Walking skeleton + Guardrails *(early — guardrails are the key to AI-assisted work)* *[BP §2.6]* ✅ LOCAL DoD MET
+## Phase 2 — Walking skeleton + Guardrails *(early — guardrails are the key to AI-assisted work)* ✅ LOCAL DoD MET
 
 - [x] **TypeScript strict** — template already sets `strict: true`; added `pnpm typecheck` script
-- [x] **Env validation with Zod** (`@t3-oss/env-nextjs` + zod) → `src/env.ts`, imported in `next.config.ts`; bypass with `SKIP_ENV_VALIDATION=1` *[BP §2.6]*
+- [x] **Env validation with Zod** (`@t3-oss/env-nextjs` + zod) → `src/env.ts`, imported in `next.config.ts`; bypass with `SKIP_ENV_VALIDATION=1`
 - [x] ESLint + Prettier — **fixed the lint crash**: dropped FlatCompat → native flat config; react-hooks v6 disabled per-file (ADR 0002). `pnpm lint` → 0 errors
 - [x] **Playwright (e2e)** — template ships `tests/e2e/*` (needs browser+server → run in Phase 13/`verify`)
 - [x] **Vitest (int)** — template ships it; raised `hookTimeout` (booting the engine over Neon >10s). `pnpm test:int` PASS
-- [x] **GitHub Actions CI** `.github/workflows/ci.yml`: lint + typecheck on every push/PR *[BP §9]* (build + e2e/int need a DB → Phase 12)
+- [x] **GitHub Actions CI** `.github/workflows/ci.yml`: lint + typecheck on every push/PR (build + e2e/int need a DB → Phase 12)
 - [x] Convention: later phases merge only when CI is green
 
 **DoD:** ✅ local: `pnpm lint` (0 err) · `pnpm typecheck` · `pnpm build` · `pnpm test:int` all green. CI (lint+typecheck) verifies on push. ⏳ build/e2e on CI deferred to Phase 12 (needs Postgres service + migrations).
 
 ---
 
-## Phase 3 — Tailwind v4 + Design tokens + Light/Dark *[BP §6.5]*
+## Phase 3 — Tailwind v4 + Design tokens + Light/Dark
 
-- [ ] Configure **Tailwind v4** (`@import "tailwindcss"`); shadcn/ui base via the v4 CLI *[BP §2, §5]* — note: template already on v4, so mostly verify
-- [ ] Define **design tokens via `@theme`** (light/dark pairs: `--background`, `--foreground`, radius, font…) *[BP §3, §6.5]* — Appendix E; locate the template's token file
+- [ ] Configure **Tailwind v4** (`@import "tailwindcss"`); shadcn/ui base via the v4 CLI — note: template already on v4, so mostly verify
+- [ ] Define **design tokens via `@theme`** (light/dark pairs: `--background`, `--foreground`, radius, font…) — Appendix E; locate the template's token file
 - [ ] Dark mode v4: `@custom-variant dark (&:is(.dark *))` + theme provider (toggle + respect `prefers-color-scheme`)
-- [ ] Document: **"rebrand = change tokens"** *[BP §5]*
+- [ ] Document: **"rebrand = change tokens"**
 
 **DoD:** light/dark toggle works; changing one token shifts the whole site's tone; the CMS admin (separate SCSS) is unaffected.
 
 ---
 
-## Phase 4 — Normalise Collections / Globals / Plugins *(template already has these — mostly review & adjust)* *[BP §4]*
+## Phase 4 — Normalise Collections / Globals / Plugins *(template already has these — mostly review & adjust)*
 
 - [ ] Review template collections: `Users`, `Media`, `Pages` (layout builder), `Posts`, `Categories` — adjust fields as needed
-- [ ] `Media` — **require alt text**, automatic resizing *[BP §4, §6.5]*
-- [ ] Add **`Portfolio / Projects`** (not in template) *[BP §4]*
-- [ ] Globals `SiteSettings` (logo, social) + `Navigation` (header/footer) — use **`plugin-nested-docs`** for menus *[BP §4]*
-- [ ] **Use official plugins instead of hand-rolling** *[BP §4.1]*: `plugin-form-builder` (Forms + Submissions), `plugin-seo`, `plugin-redirects`, `plugin-search`
+- [ ] `Media` — **require alt text**, automatic resizing
+- [ ] Add **`Portfolio / Projects`** (not in template)
+- [ ] Globals `SiteSettings` (logo, social) + `Navigation` (header/footer) — use **`plugin-nested-docs`** for menus
+- [ ] **Use official plugins instead of hand-rolling**: `plugin-form-builder` (Forms + Submissions), `plugin-seo`, `plugin-redirects`, `plugin-search`
 - [ ] **Drafts + Versions + Autosave** enabled for `Pages`/`Posts` (ties into ISR in Phase 7) — *hard to retrofit, do early*
 - [ ] **Live Preview** pointed at the frontend
-- [ ] **Explicit access control**: public reads only `published`; drafts require an authenticated user *[BP §4]*
+- [ ] **Explicit access control**: public reads only `published`; drafts require an authenticated user
 
 **DoD:** create a Page from blocks in admin; saved to DB; generated types match; access control blocks drafts for anonymous users; migration updated.
 
 ---
 
-## Phase 5 — Block system & registry + Lexical rendering *[BP §4, §5]*
+## Phase 5 — Block system & registry + Lexical rendering
 
-- [ ] **Block registry**: a single file mapping `blockSlug → React component` (DRY; AI adds blocks without missing a spot) *[BP §4]*
+- [ ] **Block registry**: a single file mapping `blockSlug → React component` (DRY; AI adds blocks without missing a spot)
 - [ ] Sample blocks in `src/blocks/`: **Hero, Features, Gallery, CTA** (CMS field + component pair)
 - [ ] **Serializer to render Lexical rich text → React** (for Posts/long content) — *often forgotten*
-- [ ] Read data in RSC via the **engine Local API** (no HTTP) *[BP §2.5]*
+- [ ] Read data in RSC via the **engine Local API** (no HTTP)
 
 **DoD:** a Page composed of ≥2 blocks renders correctly; rich text renders correctly; adding a new block only touches the registry + 2 files.
 
 ---
 
-## Phase 6 — Vertical slice: end-to-end Home page *(prove the whole pipeline)* *[BP §5, §2.5]*
+## Phase 6 — Vertical slice: end-to-end Home page *(prove the whole pipeline)*
 
 > Goal: **don't build all 5 pages yet**. Build one page end-to-end to lock the pipeline; the other 4 are just content (Phase 10).
 
 - [ ] `(marketing)/layout.tsx` — Header/Footer read from `Navigation`
 - [ ] **Home** page pulls real content from the CMS (block-based)
-- [ ] Contact form: **`plugin-form-builder` defines the form** → frontend renders with **React Hook Form + Zod** → submit saves to Submissions *[BP §2]* (see Appendix D for roles)
+- [ ] Contact form: **`plugin-form-builder` defines the form** → frontend renders with **React Hook Form + Zod** → submit saves to Submissions (see Appendix D for roles)
 - [ ] **Minimal seed**: admin user + sample Home page + Navigation + SiteSettings (`pnpm seed` script)
 - [ ] `next/image` **remotePatterns for Vercel Blob** (images won't load otherwise)
 
@@ -107,7 +107,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 7 — Render strategy & on-demand revalidation *[BP §2.5]*
+## Phase 7 — Render strategy & on-demand revalidation
 
 - [ ] Marketing/CMS pages: **static (SSG) + ISR**
 - [ ] **Engine `afterChange` hook** calls `revalidatePath` / `revalidateTag` on publish
@@ -118,30 +118,30 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 8 — Marclie CMS branding *[BP §4.1]*
+## Phase 8 — Marclie CMS branding
 
 - [ ] `src/cms/branding.ts`: `admin.meta` (title "Marclie CMS", favicon)
 - [ ] Replace `admin.components.graphics.Logo` / `Icon` + custom admin CSS
 - [ ] Convention: **engine core stays untouched**; customisation only in `src/collections/`, `src/cms/`
-- [ ] (Later) Package customisations into a reusable **internal plugin** *[BP §4.1]*
+- [ ] (Later) Package customisations into a reusable **internal plugin**
 
 **DoD:** admin shows the "Marclie CMS" brand + logo; engine core unmodified (easy to upgrade).
 
 ---
 
-## Phase 9 — Animation (GSAP & three.js) *[BP §6]*
+## Phase 9 — Animation (GSAP & three.js)
 
 - [ ] GSAP + ScrollTrigger in `components/animations/` (isolated wrappers)
 - [ ] three.js / R3F — **always lazy-load** (`next/dynamic`, `ssr:false`)
-- [ ] Sample presets: fade-in-on-scroll, parallax, 3D hero placeholder *[BP §6]*
-- [ ] Respect `prefers-reduced-motion` *[BP §6.5]*
-- [ ] (Optional) **React Bits free** via shadcn CLI — distinct role from GSAP, avoid duplicate effects (Appendix D); **Pro deferred** *[BP §0, §2]*
+- [ ] Sample presets: fade-in-on-scroll, parallax, 3D hero placeholder
+- [ ] Respect `prefers-reduced-motion`
+- [ ] (Optional) **React Bits free** via shadcn CLI — distinct role from GSAP, avoid duplicate effects (Appendix D); **Pro deferred**
 
 **DoD:** toggling a preset doesn't break layout; reduced-motion lowers animation; measure Lighthouse before shipping.
 
 ---
 
-## Phase 10 — Content & remaining pages *(late — content only)* *[BP §5]*
+## Phase 10 — Content & remaining pages *(late — content only)*
 
 - [ ] Author content for 4 pages: `about`, `services`, `portfolio`, `contact` (compose from existing blocks, no new code)
 - [ ] Extend the seed if portfolio/blog need sample data
@@ -150,7 +150,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 11 — AI-friendly files & docs *[BP §6.6]*
+## Phase 11 — AI-friendly files & docs
 
 - [x] `CLAUDE.md` — conventions, core-vs-extension, branding, how to use shadcn/skills (started Phase 1, kept current)
 - [x] `MAP.md` — repo map for AI
@@ -158,57 +158,57 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 - [ ] `AGENTS.md` — general AI-agent conventions
 - [ ] `.claude/skills/` — project-specific skills (add a block, create a collection)
 - [x] `docs/adr/` — architecture decisions (started Phase 0)
-- [ ] `README.md` (getting started — currently the template's) + `SETUP.md` (new-project checklist) *[BP §3, §9]*
-- [x] `.env.example` (Postgres/Neon) *[BP §9]* — Docker removed (Neon + Vercel only)
+- [ ] `README.md` (getting started — currently the template's) + `SETUP.md` (new-project checklist)
+- [x] `.env.example` (Postgres/Neon) — Docker removed (Neon + Vercel only)
 
 **DoD:** a new person/AI can start the project by reading `CLAUDE.md` + `MAP.md` + `README.md`.
 
 ---
 
-## Phase 12 — CI/CD & Vercel hosting *[BP §9, §9.5]*
+## Phase 12 — CI/CD & Vercel hosting
 
 - [ ] Connect the repo to Vercel
-- [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview) *[BP §9.5]*
-- [ ] **Vercel Blob** for media *[BP §9.5]*
+- [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview)
+- [ ] **Vercel Blob** for media
 - [ ] Set production env; **run engine migrations on deploy** (no auto-push in prod)
 - [ ] Extend CI: build + e2e/int with a Postgres service container + migrations
-- [ ] PR → **Vercel Preview Deploy** + dedicated **Neon DB branch** *[BP §6.6]*
+- [ ] PR → **Vercel Preview Deploy** + dedicated **Neon DB branch**
 - [ ] Attach a domain
 
 **DoD:** push `main` → auto-deploy prod; PR → preview deploy + dedicated DB branch; migrations run correctly.
 
 ---
 
-## Phase 13 — Quality before shipping *[BP §6.5, §7]*
+## Phase 13 — Quality before shipping
 
-- [ ] `design:accessibility-review` — WCAG 2.1 AA, **check both light & dark** *[BP §6.5]*
+- [ ] `design:accessibility-review` — WCAG 2.1 AA, **check both light & dark**
 - [ ] Colour contrast ≥ 4.5:1 (body text) in both themes; keyboard nav + visible focus
-- [ ] Lighthouse/perf (budget for three.js) *[BP §6, §10]*
-- [ ] SEO: verify metadata/sitemap/OG (`plugin-seo` present, just verify) *[BP §7]*
+- [ ] Lighthouse/perf (budget for three.js)
+- [ ] SEO: verify metadata/sitemap/OG (`plugin-seo` present, just verify)
 - [ ] End-to-end form test (run the Playwright e2e suite)
-- [ ] (Optional) Vercel Analytics + **Sentry** (error monitoring ≠ analytics, no overlap — Appendix D) *[BP §2]*
+- [ ] (Optional) Vercel Analytics + **Sentry** (error monitoring ≠ analytics, no overlap — Appendix D)
 
 **DoD:** a11y/SEO/perf meet thresholds; the form works in prod.
 
 ---
 
-## Phase 14 — Turn the repo into a GitHub Template *[BP §8]*
+## Phase 14 — Turn the repo into a GitHub Template
 
 - [ ] Push the complete starter → GitHub → tick **Template repository**
 - [ ] Test "Use this template" → independent repo, no original history
-- [ ] Document the update process (cherry-pick into older projects) *[BP §8]*
+- [ ] Document the update process (cherry-pick into older projects)
 
 **DoD:** create a new project from the template and run it end-to-end per the §7 workflow.
 
 ---
 
-## Appendix A — Sync model *[BP §9.5]*
+## Appendix A — Sync model
 - **Code** → git · **CMS schema** → engine migrations (in git) · **Data/content** → NOT via git; each environment has its own DB; client content lives in the **production DB**.
 
-## Appendix B — FREE-FIRST cost *[BP §9.6]*
+## Appendix B — FREE-FIRST cost
 - Everything free initially; minimum **Vercel Pro $20/month** (commercial use; one seat covers all sites). shadcn studio & React Bits Pro: one-time purchase **when needed**.
 
-## Appendix C — Risks to track *[BP §10]*
+## Appendix C — Risks to track
 - [ ] Version compatibility engine ↔ Next/Tailwind v4/shadcn — lock & test on upgrades
 - [ ] Whether shadcn blocks / React Bits have caught up to Tailwind v4 — verify per component when copying
 - [ ] shadcn studio license if the repo is public → consider private
@@ -248,7 +248,7 @@ Attach available skills to the right phase for speed & accuracy:
 
 **Not used in this project:** `greenshift-blocks` (WordPress/Gutenberg), `railway:use-railway` (we use Vercel), document skills (pdf/docx/xlsx/pptx), image/video generation.
 
-**Related tooling (not skills):** Figma MCP + shadcn studio Figma Kit for design-to-code *[BP §0, §7]*.
+**Related tooling (not skills):** Figma MCP + shadcn studio Figma Kit for design-to-code.
 
 **Discover more from the marketplace:** use `/plugin` or run `claude-automation-recommender`. (`ui-ux-pro-max`, `frontend-design` come from plugins/marketplace.)
 

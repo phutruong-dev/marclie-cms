@@ -1,7 +1,7 @@
 # CLAUDE.md — Marclie CMS
 
 > Project memory & conventions for Claude / AI agents. **Read this file at the start of every session.**
-> Execution plan: `TTD.md`. Repo map: `MAP.md`. Architecture decisions: `docs/adr/`. Original strategy: `BLUEPRINT.md`. History: `CHANGELOG.md`.
+> Execution plan: `TTD.md`. Repo map: `MAP.md`. Architecture decisions: `docs/adr/`. History: `CHANGELOG.md`.
 
 ## ⚠️ REQUIRED CONVENTIONS
 - **Update docs as part of "done".** After finishing ANY task (stack change, script, structure, skill, convention…), re-check and update this file, plus `TTD.md` (progress), `MAP.md` (if layout changed), `CHANGELOG.md`, and `docs/adr/` (new decisions). Stale docs mislead AI — treat updating them as part of the task's definition of done, not extra work.

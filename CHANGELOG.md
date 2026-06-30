@@ -23,3 +23,4 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 
 ### Removed
 - `docker-compose.yml` and `Dockerfile` — the project uses Neon + Vercel, so local Docker is unnecessary.
+- `BLUEPRINT.md` — the original strategy doc; its decisions now live in `TTD.md` and `docs/adr/`. Removed all `[BP §x]` references accordingly.

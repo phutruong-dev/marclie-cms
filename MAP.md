@@ -11,7 +11,6 @@
 | `MAP.md` | This file — repo map. |
 | `TTD.md` | Task tracking document (execution plan, phase by phase). |
 | `CHANGELOG.md` | Notable changes (Keep a Changelog). |
-| `BLUEPRINT.md` | Original strategy/vision document. |
 | `docs/adr/` | Architecture Decision Records (numbered). |
 | `README.md` | Engine/template readme (from the base template). |
 | `.env.example` | Environment variable template. |

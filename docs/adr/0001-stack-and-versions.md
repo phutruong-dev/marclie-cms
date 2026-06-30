@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-06-30
-- **Related:** `BLUEPRINT.md`, `TTD.md` (Phase 0)
+- **Related:** `TTD.md` (Phase 0)
 
 ## Context
 The **Marclie CMS** starter needs locked versions and a chosen foundation before scaffolding, so every derived project stays consistent and avoids compatibility drift (the #1 risk per the blueprint).
