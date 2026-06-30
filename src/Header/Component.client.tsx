@@ -1,4 +1,7 @@
 'use client'
+
+/* eslint-disable react-hooks/set-state-in-effect --
+   Đồng bộ header theme theo route trong effect (client-only). Pattern cố ý của template; revisit khi refactor (docs/adr/0002). */
 import { useHeaderTheme } from '@/providers/HeaderTheme'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'

@@ -1,5 +1,8 @@
 'use client'
 
+/* eslint-disable react-hooks/set-state-in-effect --
+   Hydrate theme từ localStorage/system trong effect chạy-một-lần (client-only). Pattern cố ý của template; revisit khi refactor (docs/adr/0002). */
+
 import React, { createContext, useCallback, use, useEffect, useState } from 'react'
 
 import type { Theme, ThemeContextType } from './types'

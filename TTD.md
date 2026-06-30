@@ -43,17 +43,17 @@ Legend: `[ ]` chưa làm · `[~]` đang làm · `[x]` xong · `[!]` bị chặn/
 
 ---
 
-## Phase 2 — Walking skeleton + Guardrail *(bật sớm — guardrail là then chốt vibecode)* *[BP §2.6]*
+## Phase 2 — Walking skeleton + Guardrail *(bật sớm — guardrail là then chốt vibecode)* *[BP §2.6]* ✅ DoD local ĐẠT
 
-- [ ] **TypeScript strict** bật toàn bộ
-- [ ] **Validate env bằng Zod** (`@t3-oss/env-nextjs`) — config/DB sai **fail ngay từ Phase 3** *[BP §2.6]*
-- [ ] ESLint + Prettier (+ lint-staged/husky tùy chọn)
-- [ ] **Playwright (e2e) — guardrail chính**: smoke test load `/` và mở `/admin`
-- [ ] **Vitest (unit) — tối giản**: chỉ cho lib/helper có logic thật (xem Phụ lục D)
-- [ ] **GitHub Actions CI**: lint + typecheck + build + test — phải **xanh trên app skeleton** *[BP §9]*
-- [ ] Quy ước: mọi phase sau chỉ merge khi **CI xanh**
+- [x] **TypeScript strict** — template đã bật `strict: true`; thêm script `pnpm typecheck`
+- [x] **Validate env bằng Zod** (`@t3-oss/env-nextjs` + zod) → `src/env.ts`, import trong `next.config.ts`; `SKIP_ENV_VALIDATION=1` để bỏ qua *[BP §2.6]*
+- [x] ESLint + Prettier — **sửa lint crash**: bỏ FlatCompat → flat config native; react-hooks v6 disable theo file (ADR 0002). `pnpm lint` 0 error
+- [x] **Playwright (e2e)** — template có sẵn `tests/e2e/*` (cần browser+server → chạy ở Phase 13/`verify`)
+- [x] **Vitest (int)** — template có sẵn; tăng `hookTimeout` (boot Payload qua Neon >10s). `pnpm test:int` PASS
+- [x] **GitHub Actions CI** `.github/workflows/ci.yml`: lint + typecheck mỗi push/PR *[BP §9]* (build + e2e/int cần DB → Phase 12)
+- [x] Quy ước: phase sau merge khi CI xanh
 
-**DoD:** `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` đều xanh local + trên CI.
+**DoD:** ✅ local: `pnpm lint` (0 err) · `pnpm typecheck` · `pnpm build` · `pnpm test:int` đều xanh. CI (lint+typecheck) sẽ verify khi push. ⏳ build/e2e trên CI hoãn tới Phase 12 (cần Postgres service + migrations).
 
 ---
 

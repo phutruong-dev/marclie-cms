@@ -2,6 +2,8 @@ import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
 import path from 'path'
 import { fileURLToPath } from 'url'
+// Validate env lúc load config (dev & build) — config sai/thiếu fail sớm
+import './src/env'
 
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)

@@ -22,8 +22,9 @@ Starter template **Marclie CMS**: marketing site + CMS trong **một** Next.js a
 pnpm dev                 # chạy dev (localhost:3000, /admin)
 pnpm build               # build production
 pnpm start               # chạy bản build
-pnpm lint                # eslint
+pnpm lint                # eslint (flat config native, xem docs/adr/0002)
 pnpm lint:fix            # eslint --fix
+pnpm typecheck           # tsc --noEmit
 pnpm generate:types      # sinh src/payload-types.ts từ config
 pnpm generate:importmap  # sinh import map cho admin
 pnpm payload             # CLI Payload (migrate, v.v.)
@@ -32,6 +33,8 @@ pnpm test:int            # vitest
 pnpm test:e2e            # playwright
 ```
 > Yêu cầu `.env` có `DATABASE_URL` (Neon) + `PAYLOAD_SECRET`. Mẫu: `.env.example`.
+> **Env validation:** `src/env.ts` (`@t3-oss/env-nextjs` + zod) — import trong `next.config.ts`, config sai/thiếu fail lúc dev/build. Bỏ qua bằng `SKIP_ENV_VALIDATION=1`.
+> **CI:** `.github/workflows/ci.yml` chạy lint + typecheck mỗi push/PR (build + e2e/int cần DB → thêm ở Phase 12).
 
 ## Cấu trúc (template website)
 ```
