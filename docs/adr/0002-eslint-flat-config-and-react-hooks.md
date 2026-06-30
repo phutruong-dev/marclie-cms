@@ -1,16 +1,16 @@
 # ADR 0002 — ESLint flat config & react-hooks v6
 
-- **Trạng thái:** Accepted
-- **Ngày:** 2026-06-30
-- **Liên quan:** `eslint.config.mjs`, Phase 2 (TTD)
+- **Status:** Accepted
+- **Date:** 2026-06-30
+- **Related:** `eslint.config.mjs`, Phase 2 (TTD)
 
-## Bối cảnh
-`pnpm lint` của template crash với lỗi `Converting circular structure to JSON` trong `@eslint/eslintrc` (FlatCompat) khi load `eslint-config-next` 16 + ESLint 9. Sau khi sửa, react-hooks v6 báo 5 error trên code template.
+## Context
+The template's `pnpm lint` crashed with `Converting circular structure to JSON` inside `@eslint/eslintrc` (FlatCompat) when loading `eslint-config-next` 16 + ESLint 9. After the fix, react-hooks v6 reported 5 errors in template code.
 
-## Quyết định
+## Decision
 
-### 1. Bỏ FlatCompat → flat config native
-`eslint-config-next@16` export sẵn flat config array (`./core-web-vitals`, `./typescript`). Import thẳng và spread, **bỏ `FlatCompat`** → hết crash.
+### 1. Drop FlatCompat → native flat config
+`eslint-config-next@16` exports ready-made flat config arrays (`./core-web-vitals`, `./typescript`). Import and spread them directly and **remove `FlatCompat`** → the crash is gone.
 
 ```js
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
@@ -18,18 +18,18 @@ import nextTypeScript from 'eslint-config-next/typescript'
 export default [...nextCoreWebVitals, ...nextTypeScript, /* overrides */]
 ```
 
-### 2. react-hooks v6 — disable theo file trên pattern cố ý
-`eslint-plugin-react-hooks` v6 (React-Compiler-era) nâng 2 rule thành error trên code template:
-- `react-hooks/set-state-in-effect` ×3 — `src/providers/Theme/index.tsx`, `ThemeSelector`, `src/Header/Component.client.tsx` (hydrate theme/header trong effect client-only).
-- `react-hooks/refs` ×2 — `src/components/Card/index.tsx` (`card.ref`/`link.ref` từ hook `useClickableCard`).
+### 2. react-hooks v6 — per-file disable on intentional patterns
+`eslint-plugin-react-hooks` v6 (React-Compiler-era) promotes two rules to errors in template code:
+- `react-hooks/set-state-in-effect` ×3 — `src/providers/Theme/index.tsx`, `ThemeSelector`, `src/Header/Component.client.tsx` (client-only theme/header hydration in an effect).
+- `react-hooks/refs` ×2 — `src/components/Card/index.tsx` (`card.ref`/`link.ref` from the `useClickableCard` hook).
 
-Đây là pattern **cố ý & chạy đúng** của template Payload. **Không hạ rule toàn cục** (vẫn muốn bắt vi phạm mới ở code của ta); thay vào đó **disable theo file** (`/* eslint-disable <rule> -- lý do */`) ngay tại 4 file đó, kèm chú thích.
+These are intentional, working patterns from the base template. We **do not lower the rules globally** (we still want to catch new violations in our own code); instead we **disable per-file** (`/* eslint-disable <rule> -- reason */`) in those four files, with an explanatory comment.
 
-Lý do không chỉnh trong `eslint.config.mjs`: flat config yêu cầu plugin được khai báo trong cùng config object với rule; `eslint-plugin-react-hooks` không resolve trực tiếp (transitive của next, pnpm strict), re-register có nguy cơ "Cannot redefine plugin".
+Why not handle it in `eslint.config.mjs`: flat config requires the plugin to be declared in the same config object as the rule; `eslint-plugin-react-hooks` is not directly resolvable (a transitive dep of next under strict pnpm), and re-registering risks "Cannot redefine plugin".
 
-### 3. Warnings không chặn CI
-`pnpm lint` còn 7 warning (unused args trong hooks/tests của template) — giữ là warning, không bật `--max-warnings 0` ở giai đoạn này.
+### 3. Warnings do not fail CI
+`pnpm lint` still has 7 warnings (unused args in template hooks/tests) — kept as warnings; `--max-warnings 0` is not enabled at this stage.
 
-## Hệ quả
-- `pnpm lint` → 0 error, exit 0.
-- Khi refactor Theme/Card về pattern React-Compiler-friendly, gỡ các `eslint-disable` tương ứng.
+## Consequences
+- `pnpm lint` → 0 errors, exit 0.
+- When Theme/Card are refactored to React-Compiler-friendly patterns, remove the corresponding `eslint-disable` comments.

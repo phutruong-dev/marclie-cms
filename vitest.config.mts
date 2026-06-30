@@ -8,7 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['tests/int/**/*.int.spec.ts'],
-    // Boot Payload + "pull schema" qua Neon (remote) > 10s mặc định ở lần đầu
+    // Booting the CMS + first "pull schema" over remote Neon exceeds the default 10s
     hookTimeout: 120_000,
     testTimeout: 60_000,
   },

@@ -1,5 +1,5 @@
-// Next 16 cung cấp flat config native → import thẳng, không cần FlatCompat
-// (FlatCompat + eslint-config-next 16 gây lỗi "circular structure to JSON").
+// Next 16 ships native flat config → import directly, no FlatCompat
+// (FlatCompat + eslint-config-next 16 triggers a "circular structure to JSON" error).
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
 import nextTypeScript from 'eslint-config-next/typescript'
 

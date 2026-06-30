@@ -1,78 +1,66 @@
 # CLAUDE.md — Marclie CMS
 
-> Bộ nhớ & quy ước dự án cho Claude/AI agent. **Đọc file này đầu mỗi phiên.**
-> Kế hoạch thực thi: `TTD.md`. Quyết định kiến trúc: `docs/adr/`. Định hướng gốc: `BLUEPRINT.md`.
+> Project memory & conventions for Claude / AI agents. **Read this file at the start of every session.**
+> Execution plan: `TTD.md`. Repo map: `MAP.md`. Architecture decisions: `docs/adr/`. Original strategy: `BLUEPRINT.md`. History: `CHANGELOG.md`.
 
-## ⚠️ QUY ƯỚC BẮT BUỘC — cập nhật CLAUDE.md
-**Sau khi hoàn tất MỖI task** (đổi stack, thêm/xóa script, đổi cấu trúc, thêm skill, đổi convention...), **kiểm tra lại file này và cập nhật ngay** nếu có gì lệch. CLAUDE.md lỗi thời sẽ làm AI hiểu sai dự án. Coi việc cập nhật CLAUDE.md là một phần của "định nghĩa hoàn thành" của task, không phải việc làm thêm. Đồng bộ luôn `TTD.md` (tick tiến độ) và `docs/adr/` (khi có quyết định mới).
+## ⚠️ REQUIRED CONVENTIONS
+- **Update docs as part of "done".** After finishing ANY task (stack change, script, structure, skill, convention…), re-check and update this file, plus `TTD.md` (progress), `MAP.md` (if layout changed), `CHANGELOG.md`, and `docs/adr/` (new decisions). Stale docs mislead AI — treat updating them as part of the task's definition of done, not extra work.
+- **Language:** ALL documentation and code comments are written in **English**. (Chat replies to the owner are in Vietnamese.)
+- **Branding:** This is the **Marclie CMS** project — refer to the product as "Marclie CMS", not as "a Payload project". See foundation note below.
 
-## Dự án là gì
-Starter template **Marclie CMS**: marketing site + CMS trong **một** Next.js app (Payload chạy in-repo). Mỗi dự án mới = đổi nội dung + theme tokens, không đụng lõi.
+## What this is
+**Marclie CMS** — a starter template combining a marketing site + CMS in a single Next.js app. Each new project changes content + theme tokens only; the core is left untouched.
 
-## Tech stack (đã khóa — xem `docs/adr/0001`)
+> **Technical foundation (for AI accuracy):** Marclie CMS is currently built on the Payload framework (engine) running in-repo. The npm package `payload`, the `payload` CLI, `payload.config.ts`, and `@payloadcms/*` packages are the real engine and must be used as-is. Over time the project will be customised into a distinct Marclie CMS. Brand the product as Marclie CMS; keep this one note for engine accuracy.
+
+## Tech stack (locked — see `docs/adr/0001`)
 - **Next.js 16.2.6** (App Router, Turbopack) · **React 19.2.6**
-- **Payload 3.85.1** (ghim cứng) — admin tại `/admin`, REST/GraphQL tự sinh
-- **Tailwind v4** (CSS-first `@theme`) + **shadcn/ui** (trong `src/components/ui/`)
-- **Postgres qua `@payloadcms/db-postgres`** → **Neon** (local dev branch + prod). Biến `DATABASE_URL`.
-- Plugins Payload: seo, redirects, nested-docs, search, form-builder; richtext **Lexical**; live-preview
-- Test: **Playwright** (e2e) + **Vitest** (int). Quản lý package: **pnpm**. Node: `.nvmrc` = 24.
+- **CMS engine 3.85.1** (pinned) — admin at `/admin`, auto-generated REST/GraphQL
+- **Tailwind v4** (CSS-first `@theme`) + **shadcn/ui** (in `src/components/ui/`)
+- **Postgres via `@payloadcms/db-postgres`** → **Neon** (local dev branch + prod). Env var `DATABASE_URL`.
+- CMS plugins: seo, redirects, nested-docs, search, form-builder; rich text **Lexical**; live-preview
+- Tests: **Playwright** (e2e) + **Vitest** (int). Package manager: **pnpm**. Node: `.nvmrc` = 24.
 
-## Lệnh
+## Commands
 ```bash
-pnpm dev                 # chạy dev (localhost:3000, /admin)
-pnpm build               # build production
-pnpm start               # chạy bản build
-pnpm lint                # eslint (flat config native, xem docs/adr/0002)
+pnpm dev                 # dev server (localhost:3000, /admin)
+pnpm build               # production build
+pnpm start               # run the production build
+pnpm lint                # eslint (native flat config, see docs/adr/0002)
 pnpm lint:fix            # eslint --fix
 pnpm typecheck           # tsc --noEmit
-pnpm generate:types      # sinh src/payload-types.ts từ config
-pnpm generate:importmap  # sinh import map cho admin
-pnpm payload             # CLI Payload (migrate, v.v.)
+pnpm generate:types      # generate src/payload-types.ts from config
+pnpm generate:importmap  # generate the admin import map
+pnpm payload             # CMS engine CLI (migrate, etc.)
 pnpm test                # test:int + test:e2e
 pnpm test:int            # vitest
 pnpm test:e2e            # playwright
 ```
-> Yêu cầu `.env` có `DATABASE_URL` (Neon) + `PAYLOAD_SECRET`. Mẫu: `.env.example`.
-> **Env validation:** `src/env.ts` (`@t3-oss/env-nextjs` + zod) — import trong `next.config.ts`, config sai/thiếu fail lúc dev/build. Bỏ qua bằng `SKIP_ENV_VALIDATION=1`.
-> **CI:** `.github/workflows/ci.yml` chạy lint + typecheck mỗi push/PR (build + e2e/int cần DB → thêm ở Phase 12).
+> Requires `.env` with `DATABASE_URL` (Neon) + `PAYLOAD_SECRET`. Template: `.env.example`.
+> **Env validation:** `src/env.ts` (`@t3-oss/env-nextjs` + zod) is imported in `next.config.ts`; missing/invalid config fails at dev/build time. Bypass with `SKIP_ENV_VALIDATION=1`.
+> **CI:** `.github/workflows/ci.yml` runs lint + typecheck on every push/PR (build + e2e/int need a DB → added in Phase 12).
 
-## Cấu trúc (template website)
-```
-src/
-├── app/
-│   ├── (frontend)/        # site public (home, [slug], posts, search...)
-│   └── (payload)/         # admin + api Payload  ← LÕI, đừng sửa
-├── collections/           # Pages, Posts, Categories, Media, Users
-├── blocks/                # block CMS + component (RenderBlocks.tsx = registry)
-├── heros/                 # các kiểu hero
-├── Header/ , Footer/      # globals (nav)
-├── plugins/index.ts       # cấu hình plugin Payload
-├── components/ui/         # shadcn/ui base
-├── providers/Theme/       # light/dark (next-themes-style)
-├── endpoints/seed/        # seed dữ liệu mẫu
-├── fields/ , hooks/ , utilities/ , access/
-└── payload.config.ts      # ⭐ cấu hình CMS trung tâm
-```
+## Layout
+See `MAP.md` for the full repo map. Key directories live under `src/` (`app/`, `collections/`, `blocks/`, `components/`, `providers/`, `plugins/`, `endpoints/`) with `payload.config.ts` as the central CMS config.
 
-## Quy ước "lõi vs mở rộng" (để dễ nâng cấp Payload)
-- **Lõi — đừng sửa:** `src/app/(payload)/`, cơ chế Payload core. Nâng cấp Payload không vênh.
-- **Mở rộng — chỗ tùy chỉnh:** `src/collections/`, `src/blocks/`, `src/cms/` (branding/plugin nội bộ — *sẽ tạo ở Phase 8*), nội dung trong `(frontend)/`, design tokens.
-- **Brand đổi qua tokens** (Tailwind v4 `@theme`), không sửa component.
+## Core vs extension (keep upgrades painless)
+- **Core — do not edit:** `src/app/(payload)/` and engine internals. Keeps engine upgrades conflict-free.
+- **Extension — customise here:** `src/collections/`, `src/blocks/`, `src/cms/` (branding / internal plugins — created in Phase 8), content under `(frontend)/`, and design tokens.
+- **Rebrand via tokens** (Tailwind v4 `@theme`), not by editing components.
 
-## Branding Marclie CMS (Phase 8)
-Gom branding vào `src/cms/branding.ts` (`admin.meta`, Logo/Icon, CSS admin). Lõi Payload giữ nguyên.
+## Marclie CMS branding (Phase 8)
+Centralise branding in `src/cms/branding.ts` (`admin.meta`, Logo/Icon, custom admin CSS). Leave the engine core intact.
 
-## Skills đã cài (xem `TTD.md` Phụ lục F)
-Vị trí: `.agents/skills/` (quản lý bởi skills.sh, lock ở `skills-lock.json`) + `.claude/skills/` (Claude Code).
-- **shadcn** (`.agents/skills/shadcn`) — dựng/cấu hình UI shadcn; tự đọc `components.json`.
-- **GSAP ×8** (`.agents/skills/gsap-*`) — animation; ưu tiên `gsap-react` (hook `useGSAP`, SSR), `gsap-scrolltrigger`, `gsap-timeline`.
-- **tailwind-theme-builder** (`.claude/skills/`, từ jezweb) — pattern 4 bước Tailwind v4 `@theme inline` + dark mode + migration. ⚠️ assets của skill là **Vite** → dự án Next.js dùng `@tailwindcss/postcss` (đã có), bỏ `vite.config`; lấy `index.css`/pattern.
-- Cập nhật skills.sh: `pnpm dlx skills update`. Cập nhật jezweb: copy lại từ repo.
-- Có sẵn trong môi trường: `code-review`, `verify`, `security-review`, `design:accessibility-review`, `ui-ux-pro-max`, `frontend-design`.
+## Installed skills (see `TTD.md` Appendix F)
+Located in `.agents/skills/` (managed by skills.sh, locked in `skills-lock.json`) + `.claude/skills/` (Claude Code).
+- **shadcn** (`.agents/skills/shadcn`) — build/configure shadcn UI; reads `components.json`.
+- **GSAP ×8** (`.agents/skills/gsap-*`) — animation; prefer `gsap-react` (`useGSAP`, SSR), `gsap-scrolltrigger`, `gsap-timeline`.
+- **tailwind-theme-builder** (`.claude/skills/`, from jezweb) — Tailwind v4 `@theme inline` four-step pattern + dark mode + migration. ⚠️ Its assets are Vite-based → this project uses `@tailwindcss/postcss` (already set up); skip `vite.config`, reuse the `index.css`/pattern.
+- Also available in the environment: `code-review`, `verify`, `security-review`, `design:accessibility-review`, `ui-ux-pro-max`, `frontend-design`.
 
 ## Git
-- `main` = production. Conventional Commits (`feat:`, `fix:`, `chore:`...). `.env` không commit.
+- `main` = production. Conventional Commits (`feat:`, `fix:`, `chore:`…). `.env` is never committed.
 - Remote: `git@github.com:phutruong-dev/marclie-cms.git`.
 
-## Mô hình sync
-Code → git · Schema CMS → Payload migrations (trong git) · Dữ liệu → DB từng môi trường (KHÔNG qua git).
+## Sync model
+Code → git · CMS schema → engine migrations (in git) · Data → per-environment DB (NOT via git).

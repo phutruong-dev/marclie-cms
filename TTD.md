@@ -1,263 +1,264 @@
 # TTD — Task Tracking Document
 
-> **Mục tiêu:** Scaffold starter template **Marclie CMS** (Next.js + Payload + Tailwind v4 + shadcn) từ `BLUEPRINT.md` đến khi chạy được local, deploy được Vercel và biến thành GitHub Template.
-> **Triết lý thực thi:** Dựng **cỗ máy trước, nội dung sau**. Bắt đầu từ **Payload `website` template** (đã maintain sẵn plugin/drafts/live-preview) rồi *own & rebrand*, thay vì hand-build từ số 0. Guardrail (lint/typecheck/CI/env) bật **sớm** để mọi code (kể cả AI sinh) bị kiểm từ commit đầu.
-> **Cách dùng:** Làm tuần tự theo phase. Tick `[x]` khi xong. Mỗi phase có **Definition of Done (DoD)** — không qua phase sau khi DoD chưa đạt.
-> **Nguồn chân lý:** `BLUEPRINT.md` (tham chiếu ghi trong ngoặc, ví dụ *[BP §2]*).
+> **Goal:** Scaffold the **Marclie CMS** starter (Next.js + CMS engine + Tailwind v4 + shadcn) from `BLUEPRINT.md` until it runs locally, deploys on Vercel, and becomes a GitHub Template.
+> **Execution philosophy:** Build the **engine first, content later**. Start from the base **`website` template** (which already ships maintained plugins/drafts/live-preview), then *own & rebrand* it instead of hand-building from scratch. Turn guardrails (lint/typecheck/CI/env) on **early** so all code — including AI-generated — is checked from the first commit.
+> **How to use:** Work phase by phase. Tick `[x]` when done. Each phase has a **Definition of Done (DoD)** — do not advance until the DoD is met.
+> **Source of truth:** `BLUEPRINT.md` (references in brackets, e.g. *[BP §2]*).
 
-**Trạng thái tổng:** `Chưa bắt đầu`
+**Overall status:** Phase 0–2 done · Phase 3 next.
 
-Legend: `[ ]` chưa làm · `[~]` đang làm · `[x]` xong · `[!]` bị chặn/cần quyết định
+Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs decision
 
-> 📌 **Khác biệt so với bản nháp trước (đã review):** (1) scaffold từ Payload website template thay vì build tay; (2) guardrail/CI/env dời lên sớm (Phase 2); (3) Tailwind **v4** chính thức; (4) thống nhất 1 DB adapter; (5) dùng plugin Payload thay hand-roll; (6) thêm drafts/versions/live-preview, access control, Lexical render, seed, block registry; (7) **Home làm vertical-slice trước**, 4 trang còn lại đẩy về sau; (8) khử trùng tech stack (xem Phụ lục D).
-
----
-
-## Phase 0 — Quyết định kỹ thuật & khóa version *(chốt trước khi gõ lệnh)* ✅ XONG
-
-- [x] **Khóa bộ ba tương thích**: **Next.js 15.x · React 19 · Payload 3.x** — đã verify: Payload hỗ trợ Next 15.2.9–15.4.x (và 16.2.6+), Node ≥20.9 *[BP §2 lưu ý, §10]*
-- [x] **Tailwind v4** (đã chốt) — shadcn CLI bản v4+React 19; v4: `@import "tailwindcss"`, tokens qua `@theme`, dark qua `@custom-variant dark` (Phụ lục E). ⚠️ verify Tailwind version template ship ở Phase 1 *[BP §2, §6.5]*
-- [x] **DB adapter `@payloadcms/db-postgres`** trỏ Neon cho cả local lẫn prod *[BP §9.5]*
-- [x] **Base scaffold: Payload `website` template** *[BP §0 Path A, §4]*
-- [x] Công cụ verify: Node 24.14.1 · pnpm 10.33 · git 2.53 · corepack 0.34.6 (đạt yêu cầu)
-- [x] Repo: **`git@github.com:phutruong-dev/marclie-cms.git`** (đã tạo) — sẽ là `origin` ở Phase 1
-
-**DoD:** ✅ Đã ghi `docs/adr/0001-stack-and-versions.md`. Version triad, Tailwind v4, DB adapter, base template, repo — đã chốt.
+> 📌 **Foundation note:** Marclie CMS currently runs on the Payload engine in-repo. Package/CLI names like `payload`, `@payloadcms/*`, and `payload.config.ts` are the real engine and stay as-is; the product is branded "Marclie CMS". See `CLAUDE.md`.
 
 ---
 
-## Phase 1 — Scaffold nền tảng + Git + CLAUDE.md skeleton ✅ DoD ĐẠT
+## Phase 0 — Technical decisions & version lock *(settle before running commands)* ✅ DONE
 
-- [x] Scaffold từ **Payload website template** (degit tag `v3.85.1`, không qua create-payload-app vì shell non-TTY) — db postgres → Neon *[BP §4]*
-- [x] `git init` (branch `main`) + commit `80354e3` + `.gitignore` (bỏ `.env`, `.next`, `node_modules`); origin = `phutruong-dev/marclie-cms` *[BP §6.6]*
-- [x] **`CLAUDE.md` skeleton** (sẽ lớn dần): stack, version lock, lệnh, lõi-vs-mở-rộng, vị trí skill *[BP §6.6]*
-- [x] **Cài 3 skill ngoài cốt lõi** (Phụ lục F.1): shadcn (`.agents/skills/`), GSAP ×8 (`.agents/skills/`), tailwind-theme-builder/jezweb (`.claude/skills/`) — lệnh ghi trong `CLAUDE.md`
-- [x] `package.json`: version ghim cứng (Payload 3.85.1) + scripts `dev`/`build`/`payload`/`generate:types`/`generate:importmap` (template có sẵn; **chưa có `seed` script** — template dùng route `/next/seed` + SeedButton) *[BP §9]*
-- [x] Khóa Node (`.nvmrc`=24) + `.gitattributes` (LF) — engines đã có sẵn trong package.json *[BP §2.6]*
-- [x] Cây thư mục template: dùng `(frontend)` thay `(marketing)` — sẽ ánh xạ/đổi tên ở phase sau nếu cần *[BP §3]*
+- [x] **Lock the compatibility trio**: **Next.js 16.2.6 · React 19.2.6 · engine 3.85.1** — verified: engine supports Next 16.2.6+, Node ≥20.9 *[BP §2 note, §10]*
+- [x] **Tailwind v4** — shadcn CLI for v4 + React 19; v4: `@import "tailwindcss"`, tokens via `@theme`, dark via `@custom-variant dark` (Appendix E). Confirmed the template already ships v4. *[BP §2, §6.5]*
+- [x] **DB adapter `@payloadcms/db-postgres`** pointed at Neon for both local and prod *[BP §9.5]*
+- [x] **Base scaffold: `website` template** *[BP §0 Path A, §4]*
+- [x] Tooling verified: Node 24.14.1 · pnpm 10.33 · git 2.53 · corepack 0.34.6
+- [x] Repo: **`git@github.com:phutruong-dev/marclie-cms.git`** — set as `origin` in Phase 1
 
-**DoD:** ✅ HOÀN TẤT. `pnpm dev` chạy (Next 16.2.6); `/admin`→200, `/admin/login`→200, `/`→200; schema push lên Neon; admin user đầu đã tạo; `payload-types.ts` đã regenerate cho Postgres. CLAUDE.md + 3 skill + `.nvmrc`/`.gitattributes` xong.
-
-> 🎁 Template đã kèm sẵn (giảm việc Phase 4–7): blocks + `RenderBlocks.tsx` (registry), collections + access control, plugins (seo/redirects/nested-docs/search/form-builder), Theme light/dark, seed endpoint, RichText Lexical, Playwright + Vitest.
-> 🔐 **Nhắc:** Neon connection string đã lộ trong chat → rotate password ở Neon Console sau khi xong test.
+**DoD:** ✅ Recorded in `docs/adr/0001-stack-and-versions.md`. Version trio, Tailwind v4, DB adapter, base template, repo — all locked.
 
 ---
 
-## Phase 2 — Walking skeleton + Guardrail *(bật sớm — guardrail là then chốt vibecode)* *[BP §2.6]* ✅ DoD local ĐẠT
+## Phase 1 — Foundation scaffold + Git + CLAUDE.md ✅ DONE
 
-- [x] **TypeScript strict** — template đã bật `strict: true`; thêm script `pnpm typecheck`
-- [x] **Validate env bằng Zod** (`@t3-oss/env-nextjs` + zod) → `src/env.ts`, import trong `next.config.ts`; `SKIP_ENV_VALIDATION=1` để bỏ qua *[BP §2.6]*
-- [x] ESLint + Prettier — **sửa lint crash**: bỏ FlatCompat → flat config native; react-hooks v6 disable theo file (ADR 0002). `pnpm lint` 0 error
-- [x] **Playwright (e2e)** — template có sẵn `tests/e2e/*` (cần browser+server → chạy ở Phase 13/`verify`)
-- [x] **Vitest (int)** — template có sẵn; tăng `hookTimeout` (boot Payload qua Neon >10s). `pnpm test:int` PASS
-- [x] **GitHub Actions CI** `.github/workflows/ci.yml`: lint + typecheck mỗi push/PR *[BP §9]* (build + e2e/int cần DB → Phase 12)
-- [x] Quy ước: phase sau merge khi CI xanh
+- [x] Scaffold the **website template** (degit tag `v3.85.1`; `create-payload-app` needs a TTY → not used) — db postgres → Neon *[BP §4]*
+- [x] `git init` (branch `main`) + commit `80354e3` + `.gitignore` (`.env`, `.next`, `node_modules`); origin = `phutruong-dev/marclie-cms` *[BP §6.6]*
+- [x] **`CLAUDE.md`** (grows over time): stack, version lock, commands, core-vs-extension, skill locations *[BP §6.6]*
+- [x] **Install 3 core external skills** (Appendix F.1): shadcn (`.agents/skills/`), GSAP ×8 (`.agents/skills/`), tailwind-theme-builder/jezweb (`.claude/skills/`) — commands in `CLAUDE.md`
+- [x] `package.json`: hard-pinned versions (engine 3.85.1) + scripts `dev`/`build`/`payload`/`generate:types`/`generate:importmap` (from template; **no `seed` script yet** — template uses the `/next/seed` route + SeedButton) *[BP §9]*
+- [x] Lock Node (`.nvmrc`=24) + `.gitattributes` (LF) — engines already declared in package.json *[BP §2.6]*
+- [x] Template layout uses `(frontend)` instead of `(marketing)` — map/rename later if needed *[BP §3]*
 
-**DoD:** ✅ local: `pnpm lint` (0 err) · `pnpm typecheck` · `pnpm build` · `pnpm test:int` đều xanh. CI (lint+typecheck) sẽ verify khi push. ⏳ build/e2e trên CI hoãn tới Phase 12 (cần Postgres service + migrations).
+**DoD:** ✅ `pnpm dev` runs (Next 16.2.6); `/admin`→200, `/admin/login`→200, `/`→200; schema pushed to Neon; first admin user created; `payload-types.ts` regenerated for Postgres. CLAUDE.md + 3 skills + `.nvmrc`/`.gitattributes` done.
+
+> 🎁 The template already includes (reduces Phase 4–7 work): blocks + `RenderBlocks.tsx` (registry), collections + access control, plugins (seo/redirects/nested-docs/search/form-builder), Theme light/dark, seed endpoint, Lexical rich text, Playwright + Vitest.
+
+---
+
+## Phase 2 — Walking skeleton + Guardrails *(early — guardrails are the key to AI-assisted work)* *[BP §2.6]* ✅ LOCAL DoD MET
+
+- [x] **TypeScript strict** — template already sets `strict: true`; added `pnpm typecheck` script
+- [x] **Env validation with Zod** (`@t3-oss/env-nextjs` + zod) → `src/env.ts`, imported in `next.config.ts`; bypass with `SKIP_ENV_VALIDATION=1` *[BP §2.6]*
+- [x] ESLint + Prettier — **fixed the lint crash**: dropped FlatCompat → native flat config; react-hooks v6 disabled per-file (ADR 0002). `pnpm lint` → 0 errors
+- [x] **Playwright (e2e)** — template ships `tests/e2e/*` (needs browser+server → run in Phase 13/`verify`)
+- [x] **Vitest (int)** — template ships it; raised `hookTimeout` (booting the engine over Neon >10s). `pnpm test:int` PASS
+- [x] **GitHub Actions CI** `.github/workflows/ci.yml`: lint + typecheck on every push/PR *[BP §9]* (build + e2e/int need a DB → Phase 12)
+- [x] Convention: later phases merge only when CI is green
+
+**DoD:** ✅ local: `pnpm lint` (0 err) · `pnpm typecheck` · `pnpm build` · `pnpm test:int` all green. CI (lint+typecheck) verifies on push. ⏳ build/e2e on CI deferred to Phase 12 (needs Postgres service + migrations).
 
 ---
 
 ## Phase 3 — Tailwind v4 + Design tokens + Light/Dark *[BP §6.5]*
 
-- [ ] Cấu hình **Tailwind v4** (`@import "tailwindcss"`); shadcn/ui base qua CLI bản v4 *[BP §2, §5]*
-- [ ] Định nghĩa **design tokens qua `@theme`** trong `src/styles/theme.css`, dạng cặp light/dark (`--background`, `--foreground`, radius, font...) *[BP §3, §6.5]* — Phụ lục E
-- [ ] Dark mode v4: `@custom-variant dark (&:is(.dark *))` + `next-themes` (toggle + tôn trọng `prefers-color-scheme`)
-- [ ] Tài liệu hóa: **"đổi brand = đổi token trong `theme.css`"** *[BP §5]*
+- [ ] Configure **Tailwind v4** (`@import "tailwindcss"`); shadcn/ui base via the v4 CLI *[BP §2, §5]* — note: template already on v4, so mostly verify
+- [ ] Define **design tokens via `@theme`** (light/dark pairs: `--background`, `--foreground`, radius, font…) *[BP §3, §6.5]* — Appendix E; locate the template's token file
+- [ ] Dark mode v4: `@custom-variant dark (&:is(.dark *))` + theme provider (toggle + respect `prefers-color-scheme`)
+- [ ] Document: **"rebrand = change tokens"** *[BP §5]*
 
-**DoD:** Toggle light/dark chạy; đổi 1 token đổi tông toàn site; admin Payload (SCSS riêng) không bị ảnh hưởng.
-
----
-
-## Phase 4 — Chuẩn hóa Collections / Globals / Plugins *(template đã có sẵn — chủ yếu rà & chỉnh)* *[BP §4]*
-
-- [ ] Rà collections template: `Users`, `Media`, `Pages` (layout builder), `Posts`, `Categories` — chỉnh field theo nhu cầu
-- [ ] `Media` — **bắt buộc alt text**, resize tự động *[BP §4, §6.5]*
-- [ ] Thêm **`Portfolio / Projects`** (template chưa có) *[BP §4]*
-- [ ] Globals `SiteSettings` (logo, social) + `Navigation` (header/footer) — dùng **`plugin-nested-docs`** cho menu *[BP §4]*
-- [ ] **Dùng plugin chính thức thay hand-roll** *[BP §4.1]*: `plugin-form-builder` (Forms + Submissions), `plugin-seo`, `plugin-redirects`, `plugin-search`
-- [ ] **Drafts + Versions + Autosave** bật cho `Pages`/`Posts` (gắn với ISR ở Phase 7) — *khó retrofit, làm sớm*
-- [ ] **Live Preview** trỏ về frontend
-- [ ] **Access control rõ ràng**: public chỉ đọc bản `published`; draft chỉ user đăng nhập *[BP §4]*
-
-**DoD:** Tạo thử Page bằng block trong admin; lưu DB; type sinh khớp; access control chặn draft với khách; migration cập nhật.
+**DoD:** light/dark toggle works; changing one token shifts the whole site's tone; the CMS admin (separate SCSS) is unaffected.
 
 ---
 
-## Phase 5 — Block system & Registry + Render Lexical *[BP §4, §5]*
+## Phase 4 — Normalise Collections / Globals / Plugins *(template already has these — mostly review & adjust)* *[BP §4]*
 
-- [ ] **Block registry**: một file duy nhất map `blockSlug → React component` (DRY, AI thêm block không sót) *[BP §4]*
-- [ ] Block mẫu trong `src/blocks/`: **Hero, Features, Gallery, CTA** (CMS field + component cặp đôi)
-- [ ] **Serializer render Lexical rich text → React** (dùng cho Posts/nội dung dài) — *thường bị quên*
-- [ ] Đọc dữ liệu trong RSC bằng **Payload Local API** (không qua HTTP) *[BP §2.5]*
+- [ ] Review template collections: `Users`, `Media`, `Pages` (layout builder), `Posts`, `Categories` — adjust fields as needed
+- [ ] `Media` — **require alt text**, automatic resizing *[BP §4, §6.5]*
+- [ ] Add **`Portfolio / Projects`** (not in template) *[BP §4]*
+- [ ] Globals `SiteSettings` (logo, social) + `Navigation` (header/footer) — use **`plugin-nested-docs`** for menus *[BP §4]*
+- [ ] **Use official plugins instead of hand-rolling** *[BP §4.1]*: `plugin-form-builder` (Forms + Submissions), `plugin-seo`, `plugin-redirects`, `plugin-search`
+- [ ] **Drafts + Versions + Autosave** enabled for `Pages`/`Posts` (ties into ISR in Phase 7) — *hard to retrofit, do early*
+- [ ] **Live Preview** pointed at the frontend
+- [ ] **Explicit access control**: public reads only `published`; drafts require an authenticated user *[BP §4]*
 
-**DoD:** Một Page ghép từ ≥2 block render đúng; richtext render đúng; thêm 1 block mới chỉ cần sửa registry + 2 file.
-
----
-
-## Phase 6 — Vertical slice: trang Home end-to-end *(chứng minh cả pipeline)* *[BP §5, §2.5]*
-
-> Mục tiêu: **không dựng cả 5 trang vội**. Làm 1 trang xuyên suốt để khóa pipeline; 4 trang còn lại chỉ là nội dung (Phase 10).
-
-- [ ] `(marketing)/layout.tsx` — Header/Footer đọc từ `Navigation`
-- [ ] Trang **Home** lấy nội dung thật từ Payload (block-based)
-- [ ] Form contact: **`plugin-form-builder` định nghĩa form** → frontend render bằng **React Hook Form + Zod** → submit lưu Submissions *[BP §2]* (xem Phụ lục D về vai trò)
-- [ ] **Seed tối thiểu**: admin user + Home page mẫu + Navigation + SiteSettings (script `pnpm seed`)
-- [ ] `next/image` cấu hình **remotePatterns cho Vercel Blob** (ảnh không load nếu thiếu)
-
-**DoD:** Mở Home thấy nội dung từ CMS; sửa trong admin → publish → trang đổi (chuẩn bị cho Phase 7); form submit lưu DB; `pnpm seed` dựng lại được từ DB trống.
+**DoD:** create a Page from blocks in admin; saved to DB; generated types match; access control blocks drafts for anonymous users; migration updated.
 
 ---
 
-## Phase 7 — Render strategy & On-demand revalidation *[BP §2.5]*
+## Phase 5 — Block system & registry + Lexical rendering *[BP §4, §5]*
+
+- [ ] **Block registry**: a single file mapping `blockSlug → React component` (DRY; AI adds blocks without missing a spot) *[BP §4]*
+- [ ] Sample blocks in `src/blocks/`: **Hero, Features, Gallery, CTA** (CMS field + component pair)
+- [ ] **Serializer to render Lexical rich text → React** (for Posts/long content) — *often forgotten*
+- [ ] Read data in RSC via the **engine Local API** (no HTTP) *[BP §2.5]*
+
+**DoD:** a Page composed of ≥2 blocks renders correctly; rich text renders correctly; adding a new block only touches the registry + 2 files.
+
+---
+
+## Phase 6 — Vertical slice: end-to-end Home page *(prove the whole pipeline)* *[BP §5, §2.5]*
+
+> Goal: **don't build all 5 pages yet**. Build one page end-to-end to lock the pipeline; the other 4 are just content (Phase 10).
+
+- [ ] `(marketing)/layout.tsx` — Header/Footer read from `Navigation`
+- [ ] **Home** page pulls real content from the CMS (block-based)
+- [ ] Contact form: **`plugin-form-builder` defines the form** → frontend renders with **React Hook Form + Zod** → submit saves to Submissions *[BP §2]* (see Appendix D for roles)
+- [ ] **Minimal seed**: admin user + sample Home page + Navigation + SiteSettings (`pnpm seed` script)
+- [ ] `next/image` **remotePatterns for Vercel Blob** (images won't load otherwise)
+
+**DoD:** Home shows CMS content; edit + publish in admin → page updates (prep for Phase 7); form submit saves to DB; `pnpm seed` rebuilds from an empty DB.
+
+---
+
+## Phase 7 — Render strategy & on-demand revalidation *[BP §2.5]*
 
 - [ ] Marketing/CMS pages: **static (SSG) + ISR**
-- [ ] **Payload `afterChange` hook** gọi `revalidatePath` / `revalidateTag` khi publish
-- [ ] Admin Payload: luôn dynamic, không cache
-- [ ] Phần động (search/cá nhân hóa): SSR/RSC theo request
+- [ ] **Engine `afterChange` hook** calls `revalidatePath` / `revalidateTag` on publish
+- [ ] CMS admin: always dynamic, never cached
+- [ ] Dynamic parts (search/personalised): SSR/RSC per request
 
-**DoD:** Publish trong admin → Home cập nhật **không rebuild toàn site**; draft không lộ ra public.
+**DoD:** publish in admin → Home updates **without rebuilding the whole site**; drafts never leak to the public.
 
 ---
 
-## Phase 8 — Branding Marclie CMS *[BP §4.1]*
+## Phase 8 — Marclie CMS branding *[BP §4.1]*
 
 - [ ] `src/cms/branding.ts`: `admin.meta` (title "Marclie CMS", favicon)
-- [ ] Thay `admin.components.graphics.Logo` / `Icon` + CSS admin riêng
-- [ ] Quy ước: **lõi Payload giữ nguyên**; custom chỉ ở `src/collections/`, `src/cms/`
-- [ ] (Sau) Đóng gói custom thành **plugin nội bộ** tái dùng *[BP §4.1]*
+- [ ] Replace `admin.components.graphics.Logo` / `Icon` + custom admin CSS
+- [ ] Convention: **engine core stays untouched**; customisation only in `src/collections/`, `src/cms/`
+- [ ] (Later) Package customisations into a reusable **internal plugin** *[BP §4.1]*
 
-**DoD:** Admin hiển thị brand "Marclie CMS" + logo; lõi Payload chưa bị sửa (dễ nâng cấp).
+**DoD:** admin shows the "Marclie CMS" brand + logo; engine core unmodified (easy to upgrade).
 
 ---
 
 ## Phase 9 — Animation (GSAP & three.js) *[BP §6]*
 
-- [ ] GSAP + ScrollTrigger trong `components/animations/` (wrapper cô lập)
-- [ ] three.js / R3F — **luôn lazy-load** (`next/dynamic`, `ssr:false`)
-- [ ] Preset mẫu: fade-in-on-scroll, parallax, 3D hero placeholder *[BP §6]*
-- [ ] Tôn trọng `prefers-reduced-motion` *[BP §6.5]*
-- [ ] (Tùy chọn) **React Bits free** qua shadcn CLI — phân vai rõ với GSAP, tránh trùng hiệu ứng (Phụ lục D); **Pro hoãn** *[BP §0, §2]*
+- [ ] GSAP + ScrollTrigger in `components/animations/` (isolated wrappers)
+- [ ] three.js / R3F — **always lazy-load** (`next/dynamic`, `ssr:false`)
+- [ ] Sample presets: fade-in-on-scroll, parallax, 3D hero placeholder *[BP §6]*
+- [ ] Respect `prefers-reduced-motion` *[BP §6.5]*
+- [ ] (Optional) **React Bits free** via shadcn CLI — distinct role from GSAP, avoid duplicate effects (Appendix D); **Pro deferred** *[BP §0, §2]*
 
-**DoD:** Bật/tắt preset không phá layout; reduced-motion giảm animation; đo Lighthouse trước ship.
-
----
-
-## Phase 10 — Nội dung & các trang còn lại *(muộn — chỉ là content)* *[BP §5]*
-
-- [ ] Tạo nội dung 4 trang: `about`, `services`, `portfolio`, `contact` (ráp từ block đã có, không code mới)
-- [ ] Mở rộng seed nếu cần dữ liệu mẫu cho portfolio/blog
-
-**DoD:** 5 trang render đầy đủ; portfolio đọc từ collection; không phát sinh block/logic mới ngoài registry.
+**DoD:** toggling a preset doesn't break layout; reduced-motion lowers animation; measure Lighthouse before shipping.
 
 ---
 
-## Phase 11 — File vibecode & tài liệu *[BP §6.6]*
+## Phase 10 — Content & remaining pages *(late — content only)* *[BP §5]*
 
-- [ ] `CLAUDE.md` — hoàn thiện (lớn dần từ Phase 1): convention, lõi-vs-mở-rộng, brand, cách dùng shadcn/React Bits
-- [ ] `AGENTS.md` — quy ước chung cho AI agent
-- [ ] `CHANGELOG.md` — Keep a Changelog
-- [ ] `.claude/skills/` — skill riêng (thêm block, tạo collection)
-- [ ] `docs/adr/` — ghi quyết định kiến trúc (đã bắt đầu từ Phase 0)
-- [ ] `README.md` (khởi động) + `SETUP.md` (checklist dự án mới) *[BP §3, §9]*
-- [ ] `.env.example` *[BP §9]* + `docker-compose.yml` (**offline tùy chọn**, không phải mặc định) *[BP §9.5]*
+- [ ] Author content for 4 pages: `about`, `services`, `portfolio`, `contact` (compose from existing blocks, no new code)
+- [ ] Extend the seed if portfolio/blog need sample data
 
-**DoD:** Người/AI mới đọc `CLAUDE.md` + `README.md` là khởi động được.
+**DoD:** all 5 pages render; portfolio reads from its collection; no new blocks/logic beyond the registry.
 
 ---
 
-## Phase 12 — CI/CD & Hosting Vercel *[BP §9, §9.5]*
+## Phase 11 — AI-friendly files & docs *[BP §6.6]*
 
-- [ ] Connect repo vào Vercel
-- [ ] **Neon Postgres qua Vercel Marketplace** (env tự inject, branch-per-preview) *[BP §9.5]*
-- [ ] **Vercel Blob** cho media *[BP §9.5]*
-- [ ] Set env production; **chạy Payload migrate khi deploy** (không auto-push trên prod)
-- [ ] PR → **Vercel Preview Deploy** + **Neon DB branch** riêng *[BP §6.6]*
-- [ ] Gắn domain
+- [x] `CLAUDE.md` — conventions, core-vs-extension, branding, how to use shadcn/skills (started Phase 1, kept current)
+- [x] `MAP.md` — repo map for AI
+- [x] `CHANGELOG.md` — Keep a Changelog
+- [ ] `AGENTS.md` — general AI-agent conventions
+- [ ] `.claude/skills/` — project-specific skills (add a block, create a collection)
+- [x] `docs/adr/` — architecture decisions (started Phase 0)
+- [ ] `README.md` (getting started — currently the template's) + `SETUP.md` (new-project checklist) *[BP §3, §9]*
+- [x] `.env.example` (Postgres/Neon) *[BP §9]* — Docker removed (Neon + Vercel only)
 
-**DoD:** Push `main` → auto-deploy prod; PR → preview deploy + DB branch riêng; migrate chạy đúng.
-
----
-
-## Phase 13 — Chất lượng trước ship *[BP §6.5, §7]*
-
-- [ ] `design:accessibility-review` — WCAG 2.1 AA, **kiểm cả light & dark** *[BP §6.5]*
-- [ ] Color contrast ≥ 4.5:1 (text thường) cả 2 theme; keyboard nav + focus rõ
-- [ ] Lighthouse/perf (ngân sách cho three.js) *[BP §6, §10]*
-- [ ] SEO: kiểm metadata/sitemap/OG (đã có `plugin-seo`, chỉ verify) *[BP §7]*
-- [ ] Test form end-to-end
-- [ ] (Tùy chọn) Vercel Analytics + **Sentry** (error ≠ analytics, không trùng — Phụ lục D) *[BP §2]*
-
-**DoD:** A11y/SEO/perf đạt ngưỡng; form hoạt động trên prod.
+**DoD:** a new person/AI can start the project by reading `CLAUDE.md` + `MAP.md` + `README.md`.
 
 ---
 
-## Phase 14 — Biến repo thành GitHub Template *[BP §8]*
+## Phase 12 — CI/CD & Vercel hosting *[BP §9, §9.5]*
 
-- [ ] Push blueprint hoàn chỉnh → GitHub → tick **Template repository**
-- [ ] Test "Use this template" → repo độc lập, không dính lịch sử gốc
-- [ ] Ghi quy trình cập nhật blueprint (cherry-pick cho dự án cũ) *[BP §8]*
+- [ ] Connect the repo to Vercel
+- [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview) *[BP §9.5]*
+- [ ] **Vercel Blob** for media *[BP §9.5]*
+- [ ] Set production env; **run engine migrations on deploy** (no auto-push in prod)
+- [ ] Extend CI: build + e2e/int with a Postgres service container + migrations
+- [ ] PR → **Vercel Preview Deploy** + dedicated **Neon DB branch** *[BP §6.6]*
+- [ ] Attach a domain
 
-**DoD:** Tạo thử 1 dự án mới từ template, chạy end-to-end theo quy trình §7.
+**DoD:** push `main` → auto-deploy prod; PR → preview deploy + dedicated DB branch; migrations run correctly.
 
 ---
 
-## Phụ lục A — Mô hình sync *[BP §9.5]*
-- **Code** → git · **Schema CMS** → Payload migrations (trong git) · **Dữ liệu/nội dung** → KHÔNG qua git, mỗi môi trường DB riêng, nội dung client sống ở **DB production**.
+## Phase 13 — Quality before shipping *[BP §6.5, §7]*
 
-## Phụ lục B — Chi phí FREE-FIRST *[BP §9.6]*
-- Free toàn bộ lúc đầu; tối thiểu **Vercel Pro $20/tháng** (thương mại; 1 seat phủ mọi site). shadcn studio & React Bits Pro: mua-một-lần **khi cần**.
+- [ ] `design:accessibility-review` — WCAG 2.1 AA, **check both light & dark** *[BP §6.5]*
+- [ ] Colour contrast ≥ 4.5:1 (body text) in both themes; keyboard nav + visible focus
+- [ ] Lighthouse/perf (budget for three.js) *[BP §6, §10]*
+- [ ] SEO: verify metadata/sitemap/OG (`plugin-seo` present, just verify) *[BP §7]*
+- [ ] End-to-end form test (run the Playwright e2e suite)
+- [ ] (Optional) Vercel Analytics + **Sentry** (error monitoring ≠ analytics, no overlap — Appendix D) *[BP §2]*
 
-## Phụ lục C — Rủi ro theo dõi *[BP §10]*
-- [ ] Tương thích version Payload ↔ Next/Tailwind v4/shadcn — khóa & test khi nâng cấp
-- [ ] shadcn block / React Bits theo kịp Tailwind v4 chưa — verify khi copy từng component
-- [ ] License shadcn studio nếu repo public → cân nhắc private
-- [ ] Bảo trì blueprint định kỳ; performance three.js (lazy-load + ngân sách Lighthouse)
+**DoD:** a11y/SEO/perf meet thresholds; the form works in prod.
 
-## Phụ lục D — Khử trùng tech stack *(quyết định)*
-| Hạng mục | Vấn đề trùng | Quyết định |
+---
+
+## Phase 14 — Turn the repo into a GitHub Template *[BP §8]*
+
+- [ ] Push the complete starter → GitHub → tick **Template repository**
+- [ ] Test "Use this template" → independent repo, no original history
+- [ ] Document the update process (cherry-pick into older projects) *[BP §8]*
+
+**DoD:** create a new project from the template and run it end-to-end per the §7 workflow.
+
+---
+
+## Appendix A — Sync model *[BP §9.5]*
+- **Code** → git · **CMS schema** → engine migrations (in git) · **Data/content** → NOT via git; each environment has its own DB; client content lives in the **production DB**.
+
+## Appendix B — FREE-FIRST cost *[BP §9.6]*
+- Everything free initially; minimum **Vercel Pro $20/month** (commercial use; one seat covers all sites). shadcn studio & React Bits Pro: one-time purchase **when needed**.
+
+## Appendix C — Risks to track *[BP §10]*
+- [ ] Version compatibility engine ↔ Next/Tailwind v4/shadcn — lock & test on upgrades
+- [ ] Whether shadcn blocks / React Bits have caught up to Tailwind v4 — verify per component when copying
+- [ ] shadcn studio license if the repo is public → consider private
+- [ ] Periodic starter maintenance; three.js performance (lazy-load + Lighthouse budget)
+
+## Appendix D — Tech-stack de-duplication *(decisions)*
+| Item | Overlap | Decision |
 |---|---|---|
-| Forms | Hand-roll `Forms/Submissions` ↔ `plugin-form-builder` | **Bỏ hand-roll**, dùng plugin. RHF+Zod chỉ lo **render + validate** form ở frontend (không trùng) |
-| DB adapter | `db-vercel-postgres` ↔ sqlite/postgres | Thống nhất **`@payloadcms/db-postgres`** (Neon) cho local + prod |
-| Animation | React Bits ↔ GSAP cho hiệu ứng đơn giản | Phân vai: **GSAP = scroll/timeline**, **React Bits = drop-in wow**; cả 2 Pro hoãn |
-| UI blocks | shadcn studio ↔ shadcn/ui | studio **hoãn** (chưa cài) → chưa trùng |
-| Local DB | `docker-compose` ↔ Neon dev branch | Docker chỉ **offline tùy chọn**, không mặc định |
-| Test | Vitest ↔ Playwright | Không trùng; site CMS ít logic → **Playwright chính**, Vitest tối giản |
-| Observability | Sentry ↔ Vercel Analytics | Không trùng (error monitoring ≠ web analytics) — đều tùy chọn |
+| Forms | Hand-rolled `Forms/Submissions` ↔ `plugin-form-builder` | **Drop hand-roll**, use the plugin. RHF+Zod only handle frontend **render + validation** (no overlap) |
+| DB adapter | `db-vercel-postgres` ↔ sqlite/postgres | Standardise on **`@payloadcms/db-postgres`** (Neon) for local + prod |
+| Animation | React Bits ↔ GSAP for simple effects | Split roles: **GSAP = scroll/timeline**, **React Bits = drop-in wow**; both Pro deferred |
+| UI blocks | shadcn studio ↔ shadcn/ui | studio **deferred** (not installed) → no overlap yet |
+| Local DB | Docker ↔ Neon dev branch | **Docker removed** — Neon + Vercel only |
+| Test | Vitest ↔ Playwright | No overlap; CMS site has little logic → **Playwright primary**, Vitest minimal |
+| Observability | Sentry ↔ Vercel Analytics | No overlap (error monitoring ≠ web analytics) — both optional |
 
-## Phụ lục E — Ghi chú Tailwind v4 *(quan trọng cho shadcn theo kịp)*
-- Dùng **Tailwind v4**: `@import "tailwindcss"` thay `@tailwind base/components/utilities`.
-- **Design tokens định nghĩa qua `@theme`** trong `theme.css` (CSS-first), không còn `tailwind.config.js` kiểu cũ — đây là chỗ đổi brand.
-- Dark mode: khai báo `@custom-variant dark (&:is(.dark *))` + `next-themes` đặt class `.dark`.
-- **shadcn/ui**: dùng CLI bản hỗ trợ **Tailwind v4 + React 19**; `components.json` trỏ đúng `theme.css`. Khi copy block shadcn/React Bits, **verify từng cái đã hỗ trợ v4** (một số còn lag) → ghi vào `CLAUDE.md`.
-- Admin Payload dùng SCSS nội bộ, **độc lập Tailwind v4** → không xung đột.
+## Appendix E — Tailwind v4 notes *(important for shadcn compatibility)*
+- Use **Tailwind v4**: `@import "tailwindcss"` instead of `@tailwind base/components/utilities`.
+- **Design tokens defined via `@theme`** (CSS-first), no legacy `tailwind.config.js` — this is the rebrand point.
+- Dark mode: declare `@custom-variant dark (&:is(.dark *))` + a theme provider sets the `.dark` class.
+- **shadcn/ui**: use the CLI supporting **Tailwind v4 + React 19**; `components.json` points at the token CSS. When copying shadcn/React Bits blocks, **verify each one supports v4** (some lag) → note in `CLAUDE.md`.
+- The CMS admin uses internal SCSS, **independent of Tailwind v4** → no conflict.
 
-## Phụ lục F — Claude skills theo phase
-Gắn skill có sẵn vào đúng phase để làm nhanh & chuẩn hơn:
+## Appendix F — Claude skills per phase
+Attach available skills to the right phase for speed & accuracy:
 
-| Phase | Skill | Dùng để |
+| Phase | Skill | Used for |
 |---|---|---|
-| 0 | `deep-research` | Check tương thích version Next 15 / React 19 / Payload 3 / Tailwind v4 trước khi khóa |
-| 1, 11 | `init` | Sinh khung `CLAUDE.md` chuẩn từ codebase |
-| 1, 11 | `claude-automation-recommender` | Gợi ý hook/subagent/skill/plugin nên dựng cho `.claude/skills/` (cũng là cửa khám phá marketplace) |
-| 3, 5, 6, 10 | `ui-ux-pro-max` + `frontend-design` | Dựng block/theme/trang marketing — hỗ trợ thẳng React/Next/Tailwind/shadcn |
-| Mọi phase code | `code-review` | Guardrail review diff (bổ trợ CI ở Phase 2) |
-| DoD các phase | `verify` | Chạy app thật, xác minh thay đổi hoạt động |
-| 4, 13 | `security-review` | Soát access control (public chỉ đọc published) + trước ship |
-| 13 | `design:accessibility-review` | WCAG 2.1 AA, kiểm light/dark |
+| 0 | `deep-research` | Check version compatibility (Next/React/engine/Tailwind v4) before locking |
+| 1, 11 | `init` | Generate a standard `CLAUDE.md` from the codebase |
+| 1, 11 | `claude-automation-recommender` | Suggest hooks/subagents/skills/plugins for `.claude/skills/` (also a marketplace discovery path) |
+| 3, 5, 6, 10 | `ui-ux-pro-max` + `frontend-design` | Build blocks/theme/marketing pages — direct React/Next/Tailwind/shadcn support |
+| every coding phase | `code-review` | Diff-review guardrail (complements CI from Phase 2) |
+| each phase DoD | `verify` | Run the real app, confirm changes work |
+| 4, 13 | `security-review` | Audit access control (public reads published only) + pre-ship |
+| 13 | `design:accessibility-review` | WCAG 2.1 AA, check light/dark |
 
-**Không dùng ở dự án này:** `greenshift-blocks` (WordPress/Gutenberg), `railway:use-railway` (ta đi Vercel), skill xử lý tài liệu pdf/docx/xlsx/pptx, sinh ảnh/video.
+**Not used in this project:** `greenshift-blocks` (WordPress/Gutenberg), `railway:use-railway` (we use Vercel), document skills (pdf/docx/xlsx/pptx), image/video generation.
 
-**Tooling (không phải skill) liên quan:** Figma MCP + shadcn studio Figma Kit cho design-to-code *[BP §0, §7]*.
+**Related tooling (not skills):** Figma MCP + shadcn studio Figma Kit for design-to-code *[BP §0, §7]*.
 
-**Khám phá thêm từ marketplace:** dùng lệnh `/plugin` hoặc chạy `claude-automation-recommender`. (`ui-ux-pro-max`, `frontend-design` vốn đến từ plugin/marketplace.)
+**Discover more from the marketplace:** use `/plugin` or run `claude-automation-recommender`. (`ui-ux-pro-max`, `frontend-design` come from plugins/marketplace.)
 
-### F.1 — Skill ngoài cần cài thêm *(rất quan trọng cho stack này)*
-Cài ở **Phase 0/1** để mọi phase UI/animation về sau chuẩn ngay:
+### F.1 — External skills to install *(critical for this stack)*
+Installed in **Phase 0/1** so every later UI/animation phase is accurate:
 
-| Skill | Cài | Phase | Vì sao quan trọng |
+| Skill | Install | Phase | Why it matters |
 |---|---|---|---|
-| **shadcn/ui skill** | `pnpm dlx skills add shadcn/ui` | 3, 5, 6, 10 | Cả dự án dùng shadcn — skill đọc `components.json`, chạy `shadcn info --json`, bơm đúng API/component/CLI vào AI. **Nền tảng nhất.** |
-| **Tailwind v4 + shadcn** (jezweb) | `openskills install jezweb/claude-skills` | 3 | Chuẩn hóa pattern 4 bước CSS-var + `@theme inline` + dark mode tự động (khớp Phụ lục E). ⚠️ Skill viết cho **Vite** → dự án Next.js dùng `@tailwindcss/postcss`, **lấy pattern CSS + template, bỏ phần Vite** (`vite.config.ts`, `@tailwindcss/vite`). |
-| **GSAP skills** (official GreenSock) | `npx skills add https://github.com/greensock/gsap-skills` hoặc `/plugin marketplace add greensock/gsap-skills` | 9 | 8 skill; ưu tiên `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, **`gsap-react`** (hook `useGSAP`, xử lý SSR — quan trọng với Next.js), `gsap-performance`. |
+| **shadcn/ui skill** | `pnpm dlx skills add shadcn/ui` | 3, 5, 6, 10 | The whole project uses shadcn — the skill reads `components.json`, runs `shadcn info --json`, and feeds the correct API/components/CLI to the AI. **Most foundational.** |
+| **Tailwind v4 + shadcn** (jezweb, `tailwind-theme-builder`) | copied into `.claude/skills/` | 3 | Standardises the four-step CSS-var + `@theme inline` + auto dark-mode pattern (matches Appendix E). ⚠️ The skill is **Vite-based** → this Next.js project uses `@tailwindcss/postcss`; **reuse the CSS pattern/template, skip the Vite parts** (`vite.config.ts`, `@tailwindcss/vite`). |
+| **GSAP skills** (official GreenSock) | `npx skills add https://github.com/greensock/gsap-skills` or `/plugin marketplace add greensock/gsap-skills` | 9 | 8 skills; prefer `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, **`gsap-react`** (`useGSAP` hook, SSR handling — important for Next.js), `gsap-performance`. |
 
-> Ghi lệnh cài 3 skill này vào `CLAUDE.md` (Phase 1) để mọi phiên/agent sau đều có sẵn context.
+> The install commands for these 3 skills are recorded in `CLAUDE.md` (Phase 1) so every later session/agent has the context.

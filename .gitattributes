@@ -1,7 +1,7 @@
-# Chuẩn hoá line-ending: mọi file text dùng LF trong repo (tránh cảnh báo CRLF trên Windows)
+# Normalise line endings: all text files use LF in the repo (avoids CRLF warnings on Windows)
 * text=auto eol=lf
 
-# Script bắt buộc LF
+# Force LF
 *.sh   text eol=lf
 *.mjs  text eol=lf
 *.cjs  text eol=lf
@@ -15,7 +15,7 @@
 *.yml  text eol=lf
 *.yaml text eol=lf
 
-# Nhị phân — không đụng eol
+# Binary — leave eol untouched
 *.png  binary
 *.jpg  binary
 *.jpeg binary

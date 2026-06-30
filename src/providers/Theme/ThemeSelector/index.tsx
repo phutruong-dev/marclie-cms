@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable react-hooks/set-state-in-effect --
-   Đồng bộ giá trị select với localStorage trong effect chạy-một-lần (client-only). Pattern cố ý của template; revisit khi refactor (docs/adr/0002). */
+   Sync the select value with localStorage in a run-once, client-only effect. Intentional template pattern; revisit on refactor (docs/adr/0002). */
 
 import {
   Select,

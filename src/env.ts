@@ -2,13 +2,13 @@ import { createEnv } from '@t3-oss/env-nextjs'
 import { z } from 'zod'
 
 /**
- * Nguồn chân lý cho biến môi trường. Config sai/thiếu sẽ fail ngay lúc build/dev
- * (import trong next.config.ts). Đặt SKIP_ENV_VALIDATION=1 để bỏ qua (vd Docker build).
+ * Single source of truth for environment variables. Invalid/missing config fails
+ * at build/dev time (imported in next.config.ts). Set SKIP_ENV_VALIDATION=1 to bypass.
  */
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().min(1, 'DATABASE_URL bắt buộc (Postgres/Neon connection string)'),
-    PAYLOAD_SECRET: z.string().min(16, 'PAYLOAD_SECRET phải đủ dài (≥16 ký tự)'),
+    DATABASE_URL: z.string().min(1, 'DATABASE_URL is required (Postgres/Neon connection string)'),
+    PAYLOAD_SECRET: z.string().min(16, 'PAYLOAD_SECRET must be long enough (>=16 chars)'),
     CRON_SECRET: z.string().optional(),
     PREVIEW_SECRET: z.string().optional(),
   },

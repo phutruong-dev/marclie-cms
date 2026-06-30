@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-# Hủy run cũ khi push mới vào cùng nhánh
+# Cancel older runs when a new push lands on the same ref
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -36,5 +36,5 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-  # NOTE: job `build` + `test` (e2e/int) cần Postgres + migrations → thêm ở Phase 12
+  # NOTE: `build` + `test` (e2e/int) jobs need Postgres + migrations → added in Phase 12
   # (Postgres service container + `payload migrate` + DATABASE_URL/PAYLOAD_SECRET secrets).

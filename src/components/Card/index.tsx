@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable react-hooks/refs --
-   card.ref/link.ref đến từ hook useClickableCard (template). Pattern cố ý; revisit khi refactor (docs/adr/0002). */
+   card.ref/link.ref come from the useClickableCard hook (template). Intentional pattern; revisit on refactor (docs/adr/0002). */
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
