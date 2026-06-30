@@ -47,6 +47,9 @@ See `MAP.md` for the full repo map. Key directories live under `src/` (`app/`, `
 ## Theming
 Design tokens live in `src/app/(frontend)/globals.css` (Tailwind v4 `@theme`). Dark mode is driven by the `data-theme` attribute on `<html>` (not a `.dark` class), toggled by `src/providers/Theme`. **Rebrand = edit the token variables**, not components. Full guide: `docs/theming.md`.
 
+## Rendering
+Static-first: marketing/CMS pages are SSG with **on-demand revalidation** (engine `afterChange` hooks call `revalidatePath`/`revalidateTag` on publish); `/posts` uses time-based ISR (10 min); `/admin`, `/api`, `/search` are dynamic. Drafts are gated by `authenticatedOrPublished` + `draftMode`. Full guide: `docs/rendering.md`.
+
 ## Core vs extension (keep upgrades painless)
 - **Core — do not edit:** `src/app/(payload)/` and engine internals. Keeps engine upgrades conflict-free.
 - **Extension — customise here:** `src/collections/`, `src/blocks/`, `src/cms/` (branding / internal plugins — created in Phase 8), content under `(frontend)/`, and design tokens.

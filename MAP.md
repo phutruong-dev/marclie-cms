@@ -13,6 +13,7 @@
 | `CHANGELOG.md` | Notable changes (Keep a Changelog). |
 | `docs/adr/` | Architecture Decision Records (numbered). |
 | `docs/theming.md` | Theming guide: tokens, dark mode, rebrand. |
+| `docs/rendering.md` | Render strategy: SSG/ISR, revalidation, drafts. |
 | `README.md` | Engine/template readme (from the base template). |
 | `.env.example` | Environment variable template. |
 | `.github/workflows/ci.yml` | CI: lint + typecheck on push/PR. |

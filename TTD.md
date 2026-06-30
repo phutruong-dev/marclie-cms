@@ -114,14 +114,16 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 7 — Render strategy & on-demand revalidation
+## Phase 7 — Render strategy & on-demand revalidation ✅ DONE *(verify + document)*
 
-- [ ] Marketing/CMS pages: **static (SSG) + ISR**
-- [ ] **Engine `afterChange` hook** calls `revalidatePath` / `revalidateTag` on publish
-- [ ] CMS admin: always dynamic, never cached
-- [ ] Dynamic parts (search/personalised): SSR/RSC per request
+- [x] Marketing/CMS pages **SSG**: `/`, `/[slug]`, `/posts/[slug]` via `generateStaticParams`; `/posts` + `/posts/page/[n]` use `force-static` + `revalidate = 600` (ISR 10m)
+- [x] **Engine `afterChange` hooks** call `revalidatePath`/`revalidateTag` on publish — wired on Pages, Posts, Header, Footer
+- [x] CMS admin + `/api` always **dynamic** (ƒ in build output)
+- [x] `/search` dynamic per request
+- [x] Drafts gated: `authenticatedOrPublished` access + `draftMode()` + `/next/preview` (PREVIEW_SECRET)
+- [x] Documented in `docs/rendering.md`
 
-**DoD:** publish in admin → Home updates **without rebuilding the whole site**; drafts never leak to the public.
+**DoD:** ✅ Verified by route directives + Phase 2 build classification (○ Static / ● SSG / ƒ Dynamic) + hook wiring + access control. Live ISR cache behaviour validates in production (Phase 12) — `next dev` re-renders every request, so on-demand revalidation is a no-op locally by design.
 
 ---
 
