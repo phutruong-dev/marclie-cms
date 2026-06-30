@@ -1,0 +1,7 @@
+// Marclie CMS admin overrides. Loaded globally via an import in src/cms/graphics/Icon.tsx
+// (Payload 3 has no top-level admin.css config; importing in an always-rendered admin
+// component is the supported way). Add brand tweaks here without touching the engine core.
+// Example:
+// :root {
+//   --theme-success-500: #2f7d5b;
+// }

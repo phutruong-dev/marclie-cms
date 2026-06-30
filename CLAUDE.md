@@ -55,8 +55,8 @@ Static-first: marketing/CMS pages are SSG with **on-demand revalidation** (engin
 - **Extension — customise here:** `src/collections/`, `src/blocks/`, `src/cms/` (branding / internal plugins — created in Phase 8), content under `(frontend)/`, and design tokens.
 - **Rebrand via tokens** (Tailwind v4 `@theme`), not by editing components.
 
-## Marclie CMS branding (Phase 8)
-Centralise branding in `src/cms/branding.ts` (`admin.meta`, Logo/Icon, custom admin CSS). Leave the engine core intact.
+## Marclie CMS branding
+Brand identity is centralised in `src/cms/`: `branding.ts` (admin `meta` — title/favicon/OG), `graphics/Logo.tsx` + `graphics/Icon.tsx` (admin login wordmark + nav icon), `admin.scss` (admin style overrides, loaded via an import in `graphics/Icon.tsx`). The site header logo is `src/components/Logo/Logo.tsx`. Frontend metadata defaults live in `src/utilities/mergeOpenGraph.ts` + `generateMeta.ts`. Engine core stays untouched. To rebrand a project, edit these files.
 
 ## Installed skills (see `TTD.md` Appendix F)
 Located in `.agents/skills/` (managed by skills.sh, locked in `skills-lock.json`) + `.claude/skills/` (Claude Code).

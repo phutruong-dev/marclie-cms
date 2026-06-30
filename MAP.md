@@ -50,8 +50,14 @@
 | `utilities/` | Helpers (URLs, meta, formatting, `cn`, etc.). |
 | `search/` | Search plugin sync/field overrides + component. |
 
-## `src/cms/` — (planned, Phase 8)
-Marclie CMS branding (`branding.ts`) and internal plugins. Does not exist yet.
+## `src/cms/` — Marclie CMS branding
+| Path | What |
+|---|---|
+| `branding.ts` | Brand name + admin `meta` (title, favicon, OG). |
+| `graphics/Logo.tsx`, `graphics/Icon.tsx` | Admin login wordmark + nav icon. |
+| `admin.scss` | Admin style overrides (loaded via import in `graphics/Icon.tsx`). |
+
+Internal reusable plugins will also live here later.
 
 ## `tests/`
 | Path | What |

@@ -15,13 +15,21 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
+import { adminMeta } from './cms/branding'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    // Marclie CMS branding (admin title, favicon, OG) — see src/cms/branding.ts
+    meta: adminMeta,
     components: {
+      // Marclie CMS admin graphics (login wordmark + nav icon)
+      graphics: {
+        Logo: '@/cms/graphics/Logo',
+        Icon: '@/cms/graphics/Icon',
+      },
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],

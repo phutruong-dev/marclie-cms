@@ -7,23 +7,30 @@ interface Props {
   priority?: 'auto' | 'high' | 'low'
 }
 
+// Marclie CMS wordmark. Inherits text colour (currentColor) so it works in light/dark.
 export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className } = props
-
-  const loading = loadingFromProps || 'lazy'
-  const priority = priorityFromProps || 'low'
+  const { className } = props
 
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
-      alt="Payload Logo"
-      width={193}
-      height={34}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-logo-light.svg"
-    />
+    <span
+      aria-label="Marclie CMS"
+      className={clsx('inline-flex items-center gap-2 text-foreground', className)}
+    >
+      <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <rect width="28" height="28" rx="6" fill="currentColor" />
+        <text
+          x="14"
+          y="19"
+          textAnchor="middle"
+          fontFamily="ui-sans-serif, system-ui, sans-serif"
+          fontSize="16"
+          fontWeight="700"
+          className="fill-background"
+        >
+          M
+        </text>
+      </svg>
+      <span className="text-xl font-semibold tracking-tight">Marclie CMS</span>
+    </span>
   )
 }

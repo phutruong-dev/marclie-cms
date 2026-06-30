@@ -127,14 +127,17 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 8 — Marclie CMS branding
+## Phase 8 — Marclie CMS branding ✅ DONE
 
-- [ ] `src/cms/branding.ts`: `admin.meta` (title "Marclie CMS", favicon)
-- [ ] Replace `admin.components.graphics.Logo` / `Icon` + custom admin CSS
-- [ ] Convention: **engine core stays untouched**; customisation only in `src/collections/`, `src/cms/`
+- [x] `src/cms/branding.ts`: admin `meta` (title "Marclie CMS", titleSuffix, favicon `/favicon.svg`, OG) — wired into `payload.config`
+- [x] `admin.components.graphics.Logo` / `Icon` → `src/cms/graphics/*` (Marclie wordmark + monogram); `src/cms/admin.scss` style hook (loaded via import in `Icon.tsx`; Payload 3 has no top-level `admin.css`)
+- [x] Rebranded: site header logo (`components/Logo`), `BeforeLogin` text, frontend metadata (`mergeOpenGraph.ts`, `generateMeta.ts`, search/posts page titles), and demo seed titles/descriptions — removed all user-facing "Payload" strings (kept legit payloadcms.com engine doc links in BeforeDashboard)
+- [x] Convention: engine core untouched; customisation only in `src/collections/`, `src/cms/`
 - [ ] (Later) Package customisations into a reusable **internal plugin**
 
-**DoD:** admin shows the "Marclie CMS" brand + logo; engine core unmodified (easy to upgrade).
+**DoD:** ✅ Verified in browser — admin login shows the "Marclie CMS" wordmark logo + tab title "Marclie CMS — Marclie CMS" + branded welcome; site `<title>`/OG = "Marclie CMS"; engine core unmodified.
+
+> ⚠️ Known flaky: the seed's parallel `delete` clears can occasionally deadlock on Neon (`deadlock detected`) — just re-run `pnpm seed`.
 
 ---
 

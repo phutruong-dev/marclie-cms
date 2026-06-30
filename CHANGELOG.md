@@ -13,6 +13,7 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 - `Projects` collection (portfolio): case studies with gallery, client/year/url, categories, SEO, drafts/versions.
 - `Features` and `Gallery` layout blocks (config + component), registered in the block registry and the Pages layout.
 - `pnpm seed` CLI script (`src/seed.ts`) to reset and load demo content.
+- Marclie CMS branding under `src/cms/` (`branding.ts`, `graphics/Logo`, `graphics/Icon`, `admin.scss`): branded admin title, favicon, login wordmark.
 - Project docs: `CLAUDE.md`, `TTD.md`, `MAP.md`, `CHANGELOG.md`, ADRs `0001` (stack & versions) and `0002` (eslint flat config & react-hooks).
 - Environment validation: `src/env.ts` (`@t3-oss/env-nextjs` + zod), enforced in `next.config.ts`.
 - `typecheck` script (`tsc --noEmit`).
@@ -27,6 +28,7 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 - All documentation and code comments standardised to English; product branded as Marclie CMS.
 - `Media.alt` is now required (accessibility); SEO page-title fallback rebranded to "Marclie CMS".
 - Revalidate hooks honour a `DISABLE_REVALIDATE` env flag so CLI seeding works outside a Next.js request context.
+- Replaced all user-facing "Payload Website Template" branding with "Marclie CMS" (logo, admin, metadata, seed content).
 
 ### Removed
 - `docker-compose.yml` and `Dockerfile` — the project uses Neon + Vercel, so local Docker is unnecessary.
