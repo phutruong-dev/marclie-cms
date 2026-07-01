@@ -14,7 +14,9 @@ export const Logo = (props: Props) => {
   return (
     <span
       aria-label="Marclie CMS"
-      className={clsx('inline-flex items-center gap-2 text-foreground', className)}
+      // Inherit the surrounding text colour (currentColor) so the wordmark stays
+      // legible on both the light header and the dark footer (WCAG contrast).
+      className={clsx('inline-flex items-center gap-2', className)}
     >
       <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden>
         <rect width="28" height="28" rx="6" fill="currentColor" />
