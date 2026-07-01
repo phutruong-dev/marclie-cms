@@ -41,6 +41,9 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
   - Migration workflow: `migrate`/`migrate:create`/`migrate:status` scripts, explicit `migrationDir: src/migrations/`, `src/migrations/README.md`, and a `vercel-build` deploy build command (`payload migrate && pnpm build`).
   - CI `integration` job (Postgres 16 service → migrate → int tests → build; production build gated on a committed baseline migration).
 
+### Fixed
+- **Production admin rendered blank** — the `vercelBlobStorage` plugin (added Phase 12) registers an admin client component (`VercelBlobClientUploadHandler`) when enabled, but `admin/importMap.js` was not regenerated, so the prod admin crashed (dev resolves components dynamically → bug hidden until prod). Regenerated the import map (with Blob enabled) and added `payload generate:importmap` to the `vercel-build` script so prod stays consistent.
+
 ### Changed
 - `README.md` rewritten for Marclie CMS getting-started (replaced the base template's Payload readme).
 - Database adapter swapped from MongoDB to Postgres (`@payloadcms/db-postgres`) for both local (Neon dev branch) and production.

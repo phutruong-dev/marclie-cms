@@ -201,6 +201,8 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 - [ ] Attach a custom domain — deferred (using `marclie-cms.vercel.app`)
 
 **Learnings (important):**
+- **Import map must match prod plugins.** Adding the `vercelBlobStorage` plugin without `pnpm generate:importmap` left `admin/importMap.js` missing `VercelBlobClientUploadHandler` → **prod admin rendered blank** (dev hid it via dynamic resolution). Fix: regenerate the map + run `payload generate:importmap` in `vercel-build`. Always regenerate after adding plugins/admin components.
+- **Don't `pnpm seed` a live prod DB.** Seed uses dev-style schema push, which puts the DB in a "dev mode" state so `payload migrate` prompts on the next deploy (non-TTY auto-continues, but it's fragile). For a clean prod, use migrations only and add content via `/admin`.
 - `pnpm ci` does **not** run a `ci` script (pnpm reserves `ci` → `ERR_PNPM_CI_NOT_IMPLEMENTED`); the deploy script is named **`vercel-build`** and the build command is `pnpm run vercel-build`.
 - `payload migrate:create` (generate) hits a Node 24 tsx+drizzle-kit bug on any OS → generate on **Node 22** (GitHub Actions). `payload migrate` (apply) is unaffected → deploy on Node 24 is fine.
 
