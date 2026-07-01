@@ -53,7 +53,7 @@ Set in Vercel (Neon/Blob integrations inject some automatically):
 | **Runtime Node** | 24.x |
 | **Neon org** | `Phu Dev` · `org-gentle-tree-01335350` |
 | **Neon PROD db** | project `marclie-cms-prod` · id `ancient-forest-83446570` · branch `main` · region `aws-eu-central-1` (direct connection string → `DATABASE_URL`) |
-| **Neon DEV db** | project `marclie-cms` · id `red-thunder-07826870` · branch `production` (local dev only — do NOT point prod here) |
+| **Neon DEV db** | none currently — the old dev project was deleted. For local dev, create a fresh Neon project/branch and put its connection string in `.env` (`DATABASE_URL`). Never point local dev at the prod DB. |
 | **Vercel Blob** | store `marclie-cms-media` · id `store_hlslN6ZTzjo1gnz9` · region `iad1` (injects `BLOB_READ_WRITE_TOKEN`) |
 
 **Prod env vars** (set in Vercel → Settings → Environment Variables): `DATABASE_URL` (Neon prod), `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `PREVIEW_SECRET`, `CRON_SECRET`, `BLOB_READ_WRITE_TOKEN` (auto from Blob store).
