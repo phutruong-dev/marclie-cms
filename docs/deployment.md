@@ -38,14 +38,19 @@ Set in Vercel (Neon/Blob integrations inject some automatically):
 - `quality` job: lint + typecheck on every push/PR.
 - `integration` job: `postgres:16` service → `pnpm migrate` → `pnpm test:int` → `pnpm build`. The production `build` step is skipped until a baseline migration is committed, then activates automatically.
 
-## Repo-side vs. dashboard-side (Phase 12)
-**Done in the repo (this pass):**
-- Vercel Blob plugin + `next/image` remote pattern + `BLOB_READ_WRITE_TOKEN` env.
+## Current production setup (2026-07-01)
+- **Live:** `https://marclie-cms.vercel.app` (Vercel project `marclie-cms`, GitHub `phutruong-dev/marclie-cms`).
+- **Build command:** `pnpm run vercel-build`. ⚠️ Not `pnpm ci` — pnpm reserves `ci` as a builtin (`ERR_PNPM_CI_NOT_IMPLEMENTED`) and won't run a script named `ci`.
+- **Prod DB:** a dedicated **empty Neon project** `marclie-cms-prod` (direct connection string in `DATABASE_URL`), separate from the dev project. Migrations applied on deploy created the schema; `pnpm seed` loaded demo content.
+- **Runtime Node:** 24.x (Vercel). Deploy runs `payload migrate` (apply) which is fine on 24.
+- **Migration generation:** done on **Node 22** via the `Generate baseline migration` GitHub Action (see `src/migrations/README.md`) — `migrate:create` breaks on Node 24.
+
+**Deferred (optional):**
+- **Vercel Blob** store — until added, media uploaded in prod won't persist (Vercel FS is ephemeral).
+- **Branch-per-preview** via the Neon–Vercel integration (chose a separate prod project over the Marketplace for now).
+- Custom **domain**.
+
+## Repo-side (reference)
+- Vercel Blob plugin + `next/image` remote pattern + `BLOB_READ_WRITE_TOKEN` env (token-gated).
 - Migration scripts, `migrationDir`, and the `pnpm run vercel-build` deploy build command.
 - CI Postgres-backed integration + gated build job.
-
-**Still dashboard/DB-side (interactive):**
-- Connect the repo to Vercel; set the build command to `pnpm run vercel-build`.
-- Provision Neon via the Vercel Marketplace (branch-per-preview) + add a Blob store.
-- Generate & commit the **baseline migration** against a real DB.
-- Set production env vars; attach a domain; confirm PR → preview deploy + dedicated Neon branch.

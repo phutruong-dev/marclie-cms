@@ -5,7 +5,7 @@
 > **How to use:** Work phase by phase. Tick `[x]` when done. Each phase has a **Definition of Done (DoD)** — do not advance until the DoD is met.
 > **Source of truth:** this file (`TTD.md`) + `docs/adr/` + `CLAUDE.md`. (The original `BLUEPRINT.md` strategy doc has been removed; its decisions are captured here and in the ADRs.)
 
-**Overall status:** Phase 0–11 done · Phase 12 repo-side prep done (dashboard/DB steps pending, need Vercel/Neon login).
+**Overall status:** Phase 0–12 done — **production live at https://marclie-cms.vercel.app** (Blob store / PR-preview DB branch / domain deferred). Phase 13 (quality) / 14 (GitHub Template) next.
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs decision
 
@@ -189,16 +189,22 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 - [x] **Extend CI** — new `integration` job: `postgres:16` service → `pnpm migrate` → `pnpm test:int` → `pnpm build` (build gated on a committed migration existing → CI green now, self-activates after baseline)
 - [x] Verified: `pnpm generate:types` (config loads incl. Blob plugin) + `pnpm typecheck` + `pnpm lint` (0 err)
 
-**Dashboard/DB-side ⏳ (interactive — needs Vercel/Neon login):**
-- [ ] Connect the repo to Vercel; set build command = `pnpm run vercel-build`
-- [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview)
-- [ ] Add a **Vercel Blob** store (injects `BLOB_READ_WRITE_TOKEN`)
-- [ ] **Generate & commit the baseline migration** (`pnpm migrate:create` against a fresh DB — see `src/migrations/README.md`)
-- [ ] Set production env; confirm migrations run on deploy
-- [ ] PR → **Vercel Preview Deploy** + dedicated **Neon DB branch**
-- [ ] Attach a domain
+**Dashboard/DB-side — LIVE ✅ (2026-07-01):** production at `https://marclie-cms.vercel.app`
+- [x] Connected the repo to Vercel (project `prj_G5xLB6…`, GitHub `phutruong-dev/marclie-cms`); build command = `pnpm run vercel-build` (set via API)
+- [x] **Baseline migration generated via GitHub Actions** (`generate-baseline-migration.yml`) — `migrate:create` breaks on Node 24 (tsx+drizzle-kit `node:crypto?tsx-namespace`), so the workflow runs on **Node 22**. Committed `src/migrations/20260701_033504_initial.ts`; verified by applying to a throwaway empty Neon branch.
+- [x] **Neon prod = dedicated empty project** `marclie-cms-prod` (`ancient-forest-83446570`), direct connection string (not the Marketplace). Dev stays on `red-thunder`.
+- [x] Set production env (DATABASE_URL prod, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL, PREVIEW_SECRET, CRON_SECRET) via API
+- [x] Deployed: build ran `payload migrate` (applied `20260701_033504_initial`) → `next build`; `/`, `/admin`, `/api/projects` → 200
+- [x] Seeded prod demo content (`pnpm seed` → prod) + redeployed to SSG the populated DB; `/api/projects` totalDocs 3
+- [ ] **Vercel Blob** store (injects `BLOB_READ_WRITE_TOKEN`) — deferred (media uploads in prod won't persist until added)
+- [ ] **Branch-per-preview** via Neon–Vercel integration — deferred (chose a separate prod project over Marketplace for now)
+- [ ] Attach a custom domain — deferred
 
-**DoD:** push `main` → auto-deploy prod; PR → preview deploy + dedicated DB branch; migrations run correctly.
+**Learnings (important):**
+- `pnpm ci` does **not** run a `ci` script (pnpm reserves `ci` → `ERR_PNPM_CI_NOT_IMPLEMENTED`); the deploy script is named **`vercel-build`** and the build command is `pnpm run vercel-build`.
+- `payload migrate:create` (generate) hits a Node 24 tsx+drizzle-kit bug on any OS → generate on **Node 22** (GitHub Actions). `payload migrate` (apply) is unaffected → deploy on Node 24 is fine.
+
+**DoD:** ✅ core met — push `main` → auto-deploy prod; migrations run correctly on deploy; prod live with content. ⏳ PR-preview-with-dedicated-DB-branch, Blob, and domain deferred (optional Stage 5).
 
 ---
 
