@@ -1,0 +1,57 @@
+name: Generate baseline migration
+
+# One-shot helper: generate the Payload baseline DB migration on Linux and commit
+# it back. Needed because `payload migrate:create` fails on Windows (tsx + drizzle-kit
+# `node:crypto?tsx-namespace` bug on Node 24). Run manually from the Actions tab.
+# `migrate:create` uses disableDBConnect, so no real database is required to generate.
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Migration name
+        required: true
+        default: initial
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    name: Generate + commit migration
+    runs-on: ubuntu-latest
+    env:
+      # Dummy values — generation does not connect to a DB, but the config/CLI expects them present.
+      DATABASE_URL: postgresql://user:pass@localhost:5432/dummy?sslmode=require
+      PAYLOAD_SECRET: ci-dummy-secret-for-migration-generation-only
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate migration
+        run: pnpm exec payload migrate:create "${{ github.event.inputs.name }}" --forceAcceptWarning
+
+      - name: Commit migration
+        run: |
+          if git status --porcelain src/migrations | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add src/migrations
+            git commit -m "chore(db): baseline migration (${{ github.event.inputs.name }}) [skip ci]"
+            git push
+            echo "Migration committed and pushed."
+          else
+            echo "::warning::No migration files were generated (no schema changes detected)."
+          fi

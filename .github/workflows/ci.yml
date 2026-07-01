@@ -36,5 +36,64 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-  # NOTE: `build` + `test` (e2e/int) jobs need Postgres + migrations → added in Phase 12
-  # (Postgres service container + `payload migrate` + DATABASE_URL/PAYLOAD_SECRET secrets).
+  integration:
+    name: Migrate + Integration + Build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: marclie_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/marclie_test
+      PAYLOAD_SECRET: ci-secret-not-for-production-use-only
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # Applies committed migrations. No-op (exit 0) until the baseline migration exists.
+      - name: Run migrations
+        run: pnpm migrate
+
+      # Integration tests boot the engine; the adapter auto-pushes schema in non-prod,
+      # so this passes with or without committed migrations.
+      - name: Integration tests
+        run: pnpm test:int
+
+      # `next build` runs with NODE_ENV=production → adapter push is OFF → tables must
+      # already exist from migrations. Only build once a baseline migration is committed,
+      # so CI stays green before Phase 12's baseline is generated (see src/migrations).
+      - name: Detect committed migrations
+        id: migrations
+        run: |
+          if ls src/migrations/*.ts >/dev/null 2>&1; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No baseline migration committed yet — skipping production build. Generate one with 'pnpm migrate:create' (Phase 12)."
+          fi
+
+      - name: Build
+        if: steps.migrations.outputs.present == 'true'
+        run: pnpm build

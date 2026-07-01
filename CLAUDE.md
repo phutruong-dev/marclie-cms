@@ -2,6 +2,7 @@
 
 > Project memory & conventions for Claude / AI agents. **Read this file at the start of every session.**
 > Execution plan: `TTD.md`. Repo map: `MAP.md`. Architecture decisions: `docs/adr/`. History: `CHANGELOG.md`.
+> Non-Claude agents: `AGENTS.md`. Getting started: `README.md`. New-project checklist: `SETUP.md`.
 
 ## ⚠️ REQUIRED CONVENTIONS
 - **Update docs as part of "done".** After finishing ANY task (stack change, script, structure, skill, convention…), re-check and update this file, plus `TTD.md` (progress), `MAP.md` (if layout changed), `CHANGELOG.md`, and `docs/adr/` (new decisions). Stale docs mislead AI — treat updating them as part of the task's definition of done, not extra work.
@@ -32,6 +33,9 @@ pnpm typecheck           # tsc --noEmit
 pnpm generate:types      # generate src/payload-types.ts from config
 pnpm generate:importmap  # generate the admin import map
 pnpm payload             # CMS engine CLI (migrate, etc.)
+pnpm migrate             # apply pending DB migrations (run on deploy)
+pnpm migrate:create      # generate a migration from the current config (needs a DB)
+pnpm ci                  # deploy build: payload migrate && pnpm build (Vercel build command)
 pnpm seed                # reset + load demo content (tsx; sets DISABLE_REVALIDATE=true). Stop the dev server first.
 pnpm test                # test:int + test:e2e
 pnpm test:int            # vitest
@@ -50,6 +54,12 @@ Design tokens live in `src/app/(frontend)/globals.css` (Tailwind v4 `@theme`). D
 ## Rendering
 Static-first: marketing/CMS pages are SSG with **on-demand revalidation** (engine `afterChange` hooks call `revalidatePath`/`revalidateTag` on publish); `/posts` uses time-based ISR (10 min); `/admin`, `/api`, `/search` are dynamic. Drafts are gated by `authenticatedOrPublished` + `draftMode`. Full guide: `docs/rendering.md`.
 
+## Deployment
+Vercel + Neon Postgres + Vercel Blob. **Dev auto-pushes schema; prod uses migrations** (`src/migrations/`, applied via `pnpm migrate`) — no auto-push in prod. Vercel build command = `pnpm ci` (`payload migrate && pnpm build`). Media: Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set (prod/preview), local disk otherwise (dev). Generate the baseline migration once with `pnpm migrate:create` before the first prod deploy. Full guide: `docs/deployment.md` (ADR `0003`).
+
+## Animation
+Isolated wrappers in `src/components/animations/` (barrel: `@/components/animations`). **GSAP = scroll/timeline**, **three.js/R3F = 3D**. Presets: `AnimateIn` (fade/slide-in on scroll + stagger), `Parallax`, `Hero3D` (lazy, client-only WebGL). All respect `prefers-reduced-motion` via `useReducedMotion`. Import `gsap`/`ScrollTrigger` from `animations/gsap.ts` (registers plugins once); never call GSAP/three during SSR; **always** lazy-load 3D (`next/dynamic` `ssr:false`). Full guide: `docs/animation.md`. ⚠️ R3F's global JSX augmentation breaks polymorphic `as`/`htmlElement` typing → use `React.createElement` (see `AnimateIn`, `components/Media`).
+
 ## Core vs extension (keep upgrades painless)
 - **Core — do not edit:** `src/app/(payload)/` and engine internals. Keeps engine upgrades conflict-free.
 - **Extension — customise here:** `src/collections/`, `src/blocks/`, `src/cms/` (branding / internal plugins — created in Phase 8), content under `(frontend)/`, and design tokens.
@@ -63,6 +73,8 @@ Located in `.agents/skills/` (managed by skills.sh, locked in `skills-lock.json`
 - **shadcn** (`.agents/skills/shadcn`) — build/configure shadcn UI; reads `components.json`.
 - **GSAP ×8** (`.agents/skills/gsap-*`) — animation; prefer `gsap-react` (`useGSAP`, SSR), `gsap-scrolltrigger`, `gsap-timeline`.
 - **tailwind-theme-builder** (`.claude/skills/`, from jezweb) — Tailwind v4 `@theme inline` four-step pattern + dark mode + migration. ⚠️ Its assets are Vite-based → this project uses `@tailwindcss/postcss` (already set up); skip `vite.config`, reuse the `index.css`/pattern.
+- **add-block** (`.claude/skills/`) — project skill: add a layout-builder block (config + Component + `RenderBlocks` registry + expose in collection + `generate:types`).
+- **create-collection** (`.claude/skills/`) — project skill: add a CMS collection (config + register in `payload.config.ts` + access control + optional frontend route).
 - Also available in the environment: `code-review`, `verify`, `security-review`, `design:accessibility-review`, `ui-ux-pro-max`, `frontend-design`.
 
 ## Git

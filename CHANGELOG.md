@@ -20,14 +20,29 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 - GitHub Actions CI (`.github/workflows/ci.yml`): lint + typecheck on push/PR.
 - External AI skills: shadcn, GSAP ×8, tailwind-theme-builder.
 - `.nvmrc` (Node 24) and `.gitattributes` (enforce LF).
+- Animation wrappers in `src/components/animations/` (GSAP + three.js/R3F): `AnimateIn` (fade/slide-in on scroll + stagger), `Parallax` (scrubbed), `Hero3D` (lazy, client-only WebGL placeholder), `useReducedMotion`, and a central `gsap.ts` plugin registry. All respect `prefers-reduced-motion`. `AnimateIn` wired into the Features block. Deps: `gsap`, `@gsap/react`, `three`, `@react-three/fiber`, `@react-three/drei`.
+- `docs/animation.md` — animation guide (wrappers, presets, lazy-loading 3D, reduced-motion, the R3F polymorphic-typing caveat).
+- Marketing pages `about`, `services`, `portfolio` (seeded, composed from existing blocks) and rich-text seed helpers (`endpoints/seed/lexical.ts`).
+- Portfolio frontend: `projects/[slug]` detail route (SSG, drafts/preview) and 3 sample `Projects` (`endpoints/seed/projects-data.ts`). The portfolio page lists projects via the Archive block reading the `projects` collection.
+- `AGENTS.md` — tool-agnostic AI-agent conventions (non-Claude subset of `CLAUDE.md`).
+- `SETUP.md` — checklist for starting a new project from the template.
+- Project-specific Claude Code skills: `.claude/skills/add-block` and `.claude/skills/create-collection`.
+- Phase 12 repo-side prep (ADR `0003`, `docs/deployment.md`):
+  - Vercel Blob media storage (`@payloadcms/storage-vercel-blob` 3.85.1) on the `media` collection, token-gated (local dev keeps disk storage); `next/image` remote pattern `*.public.blob.vercel-storage.com`; `BLOB_READ_WRITE_TOKEN` in `env.ts` + `.env.example`.
+  - Migration workflow: `migrate`/`migrate:create`/`migrate:status` scripts, explicit `migrationDir: src/migrations/`, `src/migrations/README.md`, and a `ci` deploy build command (`payload migrate && pnpm build`).
+  - CI `integration` job (Postgres 16 service → migrate → int tests → build; production build gated on a committed baseline migration).
 
 ### Changed
+- `README.md` rewritten for Marclie CMS getting-started (replaced the base template's Payload readme).
 - Database adapter swapped from MongoDB to Postgres (`@payloadcms/db-postgres`) for both local (Neon dev branch) and production.
 - ESLint: replaced `FlatCompat` with native flat config to fix a circular-JSON crash; react-hooks v6 rules disabled per-file on intentional template patterns.
 - Vitest: raised `hookTimeout`/`testTimeout` for booting the CMS against remote Neon.
 - All documentation and code comments standardised to English; product branded as Marclie CMS.
 - `Media.alt` is now required (accessibility); SEO page-title fallback rebranded to "Marclie CMS".
 - Revalidate hooks honour a `DISABLE_REVALIDATE` env flag so CLI seeding works outside a Next.js request context.
+- `components/Media` and `AnimateIn` build their polymorphic element via `React.createElement` so they survive R3F's global `JSX.IntrinsicElements` augmentation under `tsc`.
+- `Card`, `CollectionArchive` and the Archive block (config + Component) now support the `projects` collection in addition to `posts`.
+- Seed: categories are created with an awaited `Promise.all` (so their IDs can be referenced by projects) instead of an un-awaited array nested inside another `Promise.all` (latent template bug); footer/header nav rebranded — removed user-facing "Payload"/template links.
 - Replaced all user-facing "Payload Website Template" branding with "Marclie CMS" (logo, admin, metadata, seed content).
 
 ### Removed

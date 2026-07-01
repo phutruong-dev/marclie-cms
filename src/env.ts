@@ -11,6 +11,8 @@ export const env = createEnv({
     PAYLOAD_SECRET: z.string().min(16, 'PAYLOAD_SECRET must be long enough (>=16 chars)'),
     CRON_SECRET: z.string().optional(),
     PREVIEW_SECRET: z.string().optional(),
+    // Vercel Blob read/write token (production media storage). Absent locally → local disk.
+    BLOB_READ_WRITE_TOKEN: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_SERVER_URL: z.url().optional(),
@@ -20,6 +22,7 @@ export const env = createEnv({
     PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
     PREVIEW_SECRET: process.env.PREVIEW_SECRET,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
     NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
   },
   emptyStringAsUndefined: true,

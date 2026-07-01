@@ -5,7 +5,7 @@
 > **How to use:** Work phase by phase. Tick `[x]` when done. Each phase has a **Definition of Done (DoD)** — do not advance until the DoD is met.
 > **Source of truth:** this file (`TTD.md`) + `docs/adr/` + `CLAUDE.md`. (The original `BLUEPRINT.md` strategy doc has been removed; its decisions are captured here and in the ADRs.)
 
-**Overall status:** Phase 0–2 done · Phase 3 next.
+**Overall status:** Phase 0–11 done · Phase 12 repo-side prep done (dashboard/DB steps pending, need Vercel/Neon login).
 
 Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs decision
 
@@ -141,24 +141,28 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 ---
 
-## Phase 9 — Animation (GSAP & three.js)
+## Phase 9 — Animation (GSAP & three.js) ✅ DONE
 
-- [ ] GSAP + ScrollTrigger in `components/animations/` (isolated wrappers)
-- [ ] three.js / R3F — **always lazy-load** (`next/dynamic`, `ssr:false`)
-- [ ] Sample presets: fade-in-on-scroll, parallax, 3D hero placeholder
-- [ ] Respect `prefers-reduced-motion`
+- [x] GSAP + ScrollTrigger in `src/components/animations/` (isolated wrappers) — central `gsap.ts` registers `useGSAP`+`ScrollTrigger` once; `useGSAP` scope/cleanup per wrapper
+- [x] three.js / R3F — **always lazy-load** (`Hero3D/index.tsx` → `next/dynamic` `ssr:false`; WebGL `Scene.tsx` never imported server-side)
+- [x] Sample presets: **fade-in-on-scroll** (`AnimateIn`, variants + stagger), **parallax** (`Parallax`, scrubbed), **3D hero placeholder** (`Hero3D`, distorted icosahedron). `AnimateIn` wired into the Features block as a live example
+- [x] Respect `prefers-reduced-motion` — `useReducedMotion` (`useSyncExternalStore`); every wrapper renders the final visible state with motion off
+- [x] Documented in `docs/animation.md`; deps `gsap`, `@gsap/react`, `three`, `@react-three/fiber`, `@react-three/drei`
 - [ ] (Optional) **React Bits free** via shadcn CLI — distinct role from GSAP, avoid duplicate effects (Appendix D); **Pro deferred**
 
-**DoD:** toggling a preset doesn't break layout; reduced-motion lowers animation; measure Lighthouse before shipping.
+> ⚠️ R3F augments the global `JSX.IntrinsicElements` → polymorphic `as`/`htmlElement` components type-check `children` as `never`. Fix: `AnimateIn` + `components/Media` use `React.createElement` instead of a `<Tag>` JSX element. Reuse this for future polymorphic components.
+
+**DoD:** ✅ `pnpm typecheck` + `pnpm lint` (0 err) + `pnpm build` all green (3D code-split, no SSR error); dev boots clean with the new deps, `/` 200, no console errors. Live preset visuals (stagger/parallax/3D in a page) land with content in **Phase 10**; Lighthouse budget measured in **Phase 13** ("before shipping").
 
 ---
 
-## Phase 10 — Content & remaining pages *(late — content only)*
+## Phase 10 — Content & remaining pages *(late — content only)* ✅ DONE
 
-- [ ] Author content for 4 pages: `about`, `services`, `portfolio`, `contact` (compose from existing blocks, no new code)
-- [ ] Extend the seed if portfolio/blog need sample data
+- [x] Authored 4 pages: `about`, `services`, `portfolio` (new) + `contact` (Phase 6). `about`/`services` compose existing blocks (hero + content + features + cta); seed builders in `src/endpoints/seed/{about,services,portfolio}.ts` with a small lexical helper (`seed/lexical.ts`)
+- [x] **Portfolio reads from the Projects collection**: `portfolio` page uses the **Archive block** `populateBy: collection`, `relationTo: 'projects'`. To enable this, generalised `Card`/`CollectionArchive`/`ArchiveBlock` (config + Component) to accept `projects`, and added the frontend detail route `src/app/(frontend)/projects/[slug]/` (mirrors `posts/[slug]`: `generateStaticParams` + `generateMetadata` + drafts). `generateMeta` accepts `Project`
+- [x] Extended the seed: 3 sample `Projects` (`seed/projects-data.ts` — featuredImage, summary, content, meta, categories, published); categories creation now awaited + captured (fixed a latent template bug); nav updated (header: About/Services/Portfolio/Posts/Contact; footer rebranded — dropped user-facing "Payload"/template links)
 
-**DoD:** all 5 pages render; portfolio reads from its collection; no new blocks/logic beyond the registry.
+**DoD:** ✅ `/`, `/about`, `/services`, `/portfolio`, `/contact` all 200 + render (browser-verified); portfolio archive lists 3 projects from the collection with categories/images, project cards link to `/projects/[slug]` detail (SSG, browser-verified); `pnpm typecheck`+`lint` (0 err)+`build` green (3 project pages SSG'd); `pnpm seed` rebuilds incl. projects. No new blocks — reused the Archive block + the Phase 5 registry; the only new code is standard project-route plumbing (mirrors posts) approved to satisfy "portfolio reads from its collection".
 
 ---
 
@@ -167,23 +171,30 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 - [x] `CLAUDE.md` — conventions, core-vs-extension, branding, how to use shadcn/skills (started Phase 1, kept current)
 - [x] `MAP.md` — repo map for AI
 - [x] `CHANGELOG.md` — Keep a Changelog
-- [ ] `AGENTS.md` — general AI-agent conventions
-- [ ] `.claude/skills/` — project-specific skills (add a block, create a collection)
+- [x] `AGENTS.md` — general AI-agent conventions (tool-agnostic subset of `CLAUDE.md`)
+- [x] `.claude/skills/` — project-specific skills: `add-block`, `create-collection` (alongside `tailwind-theme-builder`)
 - [x] `docs/adr/` — architecture decisions (started Phase 0)
-- [ ] `README.md` (getting started — currently the template's) + `SETUP.md` (new-project checklist)
+- [x] `README.md` (rewritten for Marclie CMS getting-started; replaced the template's) + `SETUP.md` (new-project checklist)
 - [x] `.env.example` (Postgres/Neon) — Docker removed (Neon + Vercel only)
 
-**DoD:** a new person/AI can start the project by reading `CLAUDE.md` + `MAP.md` + `README.md`.
+**DoD:** ✅ a new person/AI can start the project by reading `CLAUDE.md` + `MAP.md` + `README.md`. `AGENTS.md` covers non-Claude agents; `add-block`/`create-collection` skills capture the two most common extension recipes; `SETUP.md` is the new-project checklist.
 
 ---
 
 ## Phase 12 — CI/CD & Vercel hosting
 
-- [ ] Connect the repo to Vercel
+**Repo-side prep ✅ DONE (2026-07-01)** — see ADR `0003` + `docs/deployment.md`:
+- [x] **Vercel Blob** for media — `@payloadcms/storage-vercel-blob` (3.85.1) on `media`, token-gated (`enabled: Boolean(BLOB_READ_WRITE_TOKEN)`); local dev unchanged (disk). `next/image` remotePattern `*.public.blob.vercel-storage.com`; `BLOB_READ_WRITE_TOKEN` in `env.ts` + `.env.example`
+- [x] **Migrations on deploy, no auto-push in prod** — adapter push off in prod by default; explicit `migrationDir: src/migrations/`; scripts `migrate`/`migrate:create`/`migrate:status`; **Vercel build command `pnpm ci`** = `payload migrate && pnpm build`
+- [x] **Extend CI** — new `integration` job: `postgres:16` service → `pnpm migrate` → `pnpm test:int` → `pnpm build` (build gated on a committed migration existing → CI green now, self-activates after baseline)
+- [x] Verified: `pnpm generate:types` (config loads incl. Blob plugin) + `pnpm typecheck` + `pnpm lint` (0 err)
+
+**Dashboard/DB-side ⏳ (interactive — needs Vercel/Neon login):**
+- [ ] Connect the repo to Vercel; set build command = `pnpm ci`
 - [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview)
-- [ ] **Vercel Blob** for media
-- [ ] Set production env; **run engine migrations on deploy** (no auto-push in prod)
-- [ ] Extend CI: build + e2e/int with a Postgres service container + migrations
+- [ ] Add a **Vercel Blob** store (injects `BLOB_READ_WRITE_TOKEN`)
+- [ ] **Generate & commit the baseline migration** (`pnpm migrate:create` against a fresh DB — see `src/migrations/README.md`)
+- [ ] Set production env; confirm migrations run on deploy
 - [ ] PR → **Vercel Preview Deploy** + dedicated **Neon DB branch**
 - [ ] Attach a domain
 

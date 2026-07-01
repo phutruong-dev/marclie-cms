@@ -70,6 +70,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL,
     },
+    // Migrations are committed to git and run on deploy (`pnpm migrate`). In dev the
+    // adapter auto-pushes schema; in production (NODE_ENV=production) push is off by
+    // default, so prod relies on these migrations. See docs/deployment.md.
+    migrationDir: path.resolve(dirname, 'migrations'),
   }),
   collections: [Pages, Posts, Projects, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
