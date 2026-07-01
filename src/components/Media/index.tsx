@@ -11,15 +11,11 @@ export const Media: React.FC<Props> = (props) => {
   const isVideo = typeof resource === 'object' && resource?.mimeType?.includes('video')
   const Tag = htmlElement || Fragment
 
-  return (
-    <Tag
-      {...(htmlElement !== null
-        ? {
-            className,
-          }
-        : {})}
-    >
-      {isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />}
-    </Tag>
+  // `React.createElement` keeps this polymorphic `htmlElement` typing intact
+  // even when three.js/R3F's global JSX augmentation is loaded (see animations/).
+  return React.createElement(
+    Tag,
+    htmlElement !== null ? { className } : {},
+    isVideo ? <VideoMedia {...props} /> : <ImageMedia {...props} />,
   )
 }
