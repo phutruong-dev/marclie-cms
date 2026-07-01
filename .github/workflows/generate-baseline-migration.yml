@@ -20,9 +20,24 @@ jobs:
   generate:
     name: Generate + commit migration
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: marclie_miggen
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
-      # Dummy values — generation does not connect to a DB, but the config/CLI expects them present.
-      DATABASE_URL: postgresql://user:pass@localhost:5432/dummy?sslmode=require
+      # migrate:create generates from config (disableDBConnect), but payload.init still
+      # opens a pool, so DATABASE_URL must point at a reachable (empty) database.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/marclie_miggen
       PAYLOAD_SECRET: ci-dummy-secret-for-migration-generation-only
       NEXT_PUBLIC_SERVER_URL: http://localhost:3000
     steps:
