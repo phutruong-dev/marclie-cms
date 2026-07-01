@@ -38,17 +38,35 @@ Set in Vercel (Neon/Blob integrations inject some automatically):
 - `quality` job: lint + typecheck on every push/PR.
 - `integration` job: `postgres:16` service → `pnpm migrate` → `pnpm test:int` → `pnpm build`. The production `build` step is skipped until a baseline migration is committed, then activates automatically.
 
-## Current production setup (2026-07-01)
-- **Live:** `https://marclie-cms.vercel.app` (Vercel project `marclie-cms`, GitHub `phutruong-dev/marclie-cms`).
-- **Build command:** `pnpm run vercel-build`. ⚠️ Not `pnpm ci` — pnpm reserves `ci` as a builtin (`ERR_PNPM_CI_NOT_IMPLEMENTED`) and won't run a script named `ci`.
-- **Prod DB:** a dedicated **empty Neon project** `marclie-cms-prod` (direct connection string in `DATABASE_URL`), separate from the dev project. Migrations applied on deploy created the schema; `pnpm seed` loaded demo content.
-- **Runtime Node:** 24.x (Vercel). Deploy runs `payload migrate` (apply) which is fine on 24.
-- **Migration generation:** done on **Node 22** via the `Generate baseline migration` GitHub Action (see `src/migrations/README.md`) — `migrate:create` breaks on Node 24.
+## Production infrastructure (2026-07-01)
+
+> Where prod lives, so future deploys target the right resources. **IDs only — no secrets.**
+> Secrets live in Vercel env vars (and, temporarily, `../../my-api.md` — rotate + delete that).
+
+| Resource | Value |
+|---|---|
+| **Live URL** | https://marclie-cms.vercel.app |
+| **Git repo** | `github.com/phutruong-dev/marclie-cms` (branch `main` → auto-deploys prod) |
+| **Vercel project** | name `marclie-cms` · id `prj_G5xLB6PNzi1OJ44YYSqvUYVjriuO` |
+| **Vercel team/owner** | `phu-truong` · team id `team_HHQzqGvN4EeV8T3HSymIZjJO` |
+| **Build command** | `pnpm run vercel-build` (= `payload migrate && payload generate:importmap && pnpm build`) |
+| **Runtime Node** | 24.x |
+| **Neon org** | `Phu Dev` · `org-gentle-tree-01335350` |
+| **Neon PROD db** | project `marclie-cms-prod` · id `ancient-forest-83446570` · branch `main` · region `aws-eu-central-1` (direct connection string → `DATABASE_URL`) |
+| **Neon DEV db** | project `marclie-cms` · id `red-thunder-07826870` · branch `production` (local dev only — do NOT point prod here) |
+| **Vercel Blob** | store `marclie-cms-media` · id `store_hlslN6ZTzjo1gnz9` · region `iad1` (injects `BLOB_READ_WRITE_TOKEN`) |
+
+**Prod env vars** (set in Vercel → Settings → Environment Variables): `DATABASE_URL` (Neon prod), `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `PREVIEW_SECRET`, `CRON_SECRET`, `BLOB_READ_WRITE_TOKEN` (auto from Blob store).
+
+### How to deploy
+- **Normal:** push to `main` → Vercel auto-deploys production (runs migrate → generate:importmap → build).
+- **Schema change:** run the `Generate baseline migration` GitHub Action (Node 22 — `migrate:create` breaks on Node 24), commit the new file, push. `payload migrate` (apply) runs on deploy (fine on Node 24).
+- **Manual redeploy (API):** `POST https://api.vercel.com/v13/deployments` with `{project:"prj_G5xLB6PNzi1OJ44YYSqvUYVjriuO", target:"production", gitSource:{type:"github", repoId:1284827582, ref:"main"}}`.
 
 **Deferred (optional):**
-- **Vercel Blob** store — until added, media uploaded in prod won't persist (Vercel FS is ephemeral).
 - **Branch-per-preview** via the Neon–Vercel integration (chose a separate prod project over the Marketplace for now).
 - Custom **domain**.
+- Sentry / Vercel Analytics.
 
 ## Repo-side (reference)
 - Vercel Blob plugin + `next/image` remote pattern + `BLOB_READ_WRITE_TOKEN` env (token-gated).
