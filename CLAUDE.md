@@ -25,7 +25,7 @@
 
 ## Commands
 ```bash
-pnpm dev                 # dev server (localhost:3000, /admin)
+pnpm dev                 # dev server (localhost:8782, /admin)
 pnpm build               # production build
 pnpm start               # run the production build
 pnpm lint                # eslint (native flat config, see docs/adr/0002)
@@ -42,6 +42,7 @@ pnpm test                # test:int + test:e2e
 pnpm test:int            # vitest
 pnpm test:e2e            # playwright
 ```
+> **Local port: `8782`** (not Next's default 3000, to avoid clashes). Set once in `package.json` (`dev`/`start` use `-p 8782`); all local URLs match it — `NEXT_PUBLIC_SERVER_URL` in `.env`/`.env.example`, the `getURL` fallback (`src/utilities/getURL.ts`), `next.config.ts`, Playwright (`playwright.config.ts` + `tests/e2e/*`). If you change the port, update those. **Double-click `start-local-web.bat`** to boot the dev server + open the browser.
 > Requires `.env` with `DATABASE_URL` (Neon) + `PAYLOAD_SECRET`. Template: `.env.example`.
 > **Env validation:** `src/env.ts` (`@t3-oss/env-nextjs` + zod) is imported in `next.config.ts`; missing/invalid config fails at dev/build time. Bypass with `SKIP_ENV_VALIDATION=1`.
 > **CI:** `.github/workflows/ci.yml` runs lint + typecheck on every push/PR (build + e2e/int need a DB → added in Phase 12).

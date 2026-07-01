@@ -13,7 +13,7 @@ Checklist for spinning up a **new client project** from this starter. The core s
 - [ ] Fill `.env`:
   - [ ] `DATABASE_URL` — the Neon connection string (`?sslmode=require`)
   - [ ] `PAYLOAD_SECRET` — a long random string
-  - [ ] `NEXT_PUBLIC_SERVER_URL` — `http://localhost:3000` for local
+  - [ ] `NEXT_PUBLIC_SERVER_URL` — `http://localhost:8782` for local
   - [ ] `PREVIEW_SECRET`, `CRON_SECRET` — random strings
 - [ ] `pnpm dev` → the engine pushes the schema to Neon; open `/admin` and create the first admin user.
 

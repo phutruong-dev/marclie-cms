@@ -25,7 +25,7 @@ jobs:
       # so a dummy connection string is fine.
       DATABASE_URL: postgresql://user:pass@localhost:5432/dummy?sslmode=require
       PAYLOAD_SECRET: ci-dummy-secret-for-migration-generation-only
-      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+      NEXT_PUBLIC_SERVER_URL: http://localhost:8782
     steps:
       - uses: actions/checkout@v4
 

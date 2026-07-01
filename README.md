@@ -23,7 +23,7 @@ A production-ready **marketing site + CMS starter** in a single Next.js app. Use
 ```bash
 cp .env.example .env      # then fill in the values (see below)
 pnpm install
-pnpm dev                  # http://localhost:3000  ·  admin at /admin
+pnpm dev                  # http://localhost:8782  ·  admin at /admin
 ```
 On first run, open `/admin` and follow the prompts to create the first admin user. To load demo content:
 ```bash
@@ -36,7 +36,7 @@ pnpm seed                 # resets the DB + loads demo pages, posts, projects, n
 |---|---|
 | `DATABASE_URL` | Postgres/Neon connection string (`?sslmode=require`) |
 | `PAYLOAD_SECRET` | Secret for encrypting JWT tokens |
-| `NEXT_PUBLIC_SERVER_URL` | Base URL, no trailing slash (`http://localhost:3000` locally) |
+| `NEXT_PUBLIC_SERVER_URL` | Base URL, no trailing slash (`http://localhost:8782` locally) |
 | `PREVIEW_SECRET` | Validates draft-preview requests |
 | `CRON_SECRET` | Authenticates scheduled jobs |
 
@@ -44,7 +44,7 @@ Env is validated at dev/build time by `src/env.ts` (zod). Bypass with `SKIP_ENV_
 
 ## Common commands
 ```bash
-pnpm dev                 # dev server (localhost:3000, /admin)
+pnpm dev                 # dev server (localhost:8782, /admin)
 pnpm build / pnpm start  # production build / run it
 pnpm lint  /  pnpm typecheck
 pnpm generate:types      # regenerate src/payload-types.ts after any config change
