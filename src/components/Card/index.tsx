@@ -7,17 +7,21 @@ import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
 import React, { Fragment } from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Post, Project } from '@/payload-types'
 
 import { Media } from '@/components/Media'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+// Card renders any collection doc that exposes a title, slug, categories and SEO
+// meta — currently posts and projects (portfolio). `relationTo` drives the link.
+export type CardPostData =
+  | Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+  | Pick<Project, 'slug' | 'categories' | 'meta' | 'title'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
   className?: string
   doc?: CardPostData
-  relationTo?: 'posts'
+  relationTo?: 'posts' | 'projects'
   showCategories?: boolean
   title?: string
 }> = (props) => {

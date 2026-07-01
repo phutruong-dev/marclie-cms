@@ -1,20 +1,25 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
 
+import { about as aboutPageData } from './about'
 import { contactForm as contactFormData } from './contact-form'
 import { contact as contactPageData } from './contact-page'
 import { home } from './home'
 import { image1 } from './image-1'
 import { image2 } from './image-2'
 import { imageHero1 } from './image-hero-1'
+import { portfolio as portfolioPageData } from './portfolio'
 import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
+import { projectsData } from './projects-data'
+import { services as servicesPageData } from './services'
 
 const collections: CollectionSlug[] = [
   'categories',
   'media',
   'pages',
   'posts',
+  'projects',
   'forms',
   'form-submissions',
   'search',
@@ -127,6 +132,9 @@ export const seed = async ({
       data: imageHero1,
       file: hero1Buffer,
     }),
+  ])
+
+  const categoryDocs = await Promise.all(
     categories.map((category) =>
       payload.create({
         collection: 'categories',
@@ -136,7 +144,7 @@ export const seed = async ({
         },
       }),
     ),
-  ])
+  )
 
   payload.logger.info(`— Seeding posts...`)
 
@@ -192,6 +200,26 @@ export const seed = async ({
     },
   })
 
+  payload.logger.info(`— Seeding projects...`)
+
+  const portfolioCategoryIds = categoryDocs
+    .filter((category) => ['Design', 'Software', 'Engineering'].includes(category.title))
+    .map((category) => category.id)
+
+  const projectImages = [image1Doc, image2Doc, image3Doc]
+
+  // Create sequentially so generated slugs/order stay deterministic.
+  for (const data of projectsData({ images: projectImages, categoryIds: portfolioCategoryIds })) {
+    await payload.create({
+      collection: 'projects',
+      depth: 0,
+      context: {
+        disableRevalidate: true,
+      },
+      data,
+    })
+  }
+
   payload.logger.info(`— Seeding contact form...`)
 
   const contactForm = await payload.create({
@@ -202,7 +230,7 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding pages...`)
 
-  const [_, contactPage] = await Promise.all([
+  const [_home, contactPage] = await Promise.all([
     payload.create({
       collection: 'pages',
       depth: 0,
@@ -213,6 +241,21 @@ export const seed = async ({
       depth: 0,
       data: contactPageData({ contactForm: contactForm }),
     }),
+    payload.create({
+      collection: 'pages',
+      depth: 0,
+      data: aboutPageData,
+    }),
+    payload.create({
+      collection: 'pages',
+      depth: 0,
+      data: servicesPageData,
+    }),
+    payload.create({
+      collection: 'pages',
+      depth: 0,
+      data: portfolioPageData,
+    }),
   ])
 
   payload.logger.info(`— Seeding globals...`)
@@ -222,6 +265,27 @@ export const seed = async ({
       slug: 'header',
       data: {
         navItems: [
+          {
+            link: {
+              type: 'custom',
+              label: 'About',
+              url: '/about',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Services',
+              url: '/services',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Portfolio',
+              url: '/portfolio',
+            },
+          },
           {
             link: {
               type: 'custom',
@@ -249,24 +313,22 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
+              label: 'About',
+              url: '/about',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Portfolio',
+              url: '/portfolio',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
               label: 'Admin',
               url: '/admin',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/3.x/templates/website',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
             },
           },
         ],
