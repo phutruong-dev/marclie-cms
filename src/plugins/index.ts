@@ -92,6 +92,11 @@ export const plugins: Plugin[] = [
   }),
   // Vercel Blob for media storage in production. Disabled when BLOB_READ_WRITE_TOKEN
   // is absent (local dev), so media falls back to local disk via /api/media.
+  // ⚠️ When enabled, this plugin registers an admin client component
+  // (VercelBlobClientUploadHandler) that MUST be in `admin/importMap.js`, or the
+  // production admin renders blank. The `vercel-build` script runs
+  // `payload generate:importmap` (with the token set in prod) so the map always
+  // matches. If you regenerate locally, set BLOB_READ_WRITE_TOKEN first.
   vercelBlobStorage({
     enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
     collections: {

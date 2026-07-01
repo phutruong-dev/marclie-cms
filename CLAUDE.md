@@ -5,6 +5,7 @@
 > Non-Claude agents: `AGENTS.md`. Getting started: `README.md`. New-project checklist: `SETUP.md`.
 
 ## ⚠️ REQUIRED CONVENTIONS
+- **Regenerate the admin import map after config changes.** Adding/removing plugins or custom admin components requires `pnpm generate:importmap` (commit `src/app/(payload)/admin/importMap.js`) — a stale map renders the **production** admin blank (dev resolves dynamically and hides the bug). For Blob, generate with `BLOB_READ_WRITE_TOKEN` set. The `vercel-build` script also regenerates it on deploy as a safety net.
 - **Update docs as part of "done".** After finishing ANY task (stack change, script, structure, skill, convention…), re-check and update this file, plus `TTD.md` (progress), `MAP.md` (if layout changed), `CHANGELOG.md`, and `docs/adr/` (new decisions). Stale docs mislead AI — treat updating them as part of the task's definition of done, not extra work.
 - **Language:** ALL documentation and code comments are written in **English**. (Chat replies to the owner are in Vietnamese.)
 - **Branding:** This is the **Marclie CMS** project — refer to the product as "Marclie CMS", not as "a Payload project". See foundation note below.
