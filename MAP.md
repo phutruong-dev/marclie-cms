@@ -7,17 +7,22 @@
 
 | Path | What it is |
 |---|---|
-| `CLAUDE.md` | Project conventions & memory for AI. Read first. |
+| `CLAUDE.md` | Project conventions & memory for AI (Claude). Read first. |
+| `AGENTS.md` | Tool-agnostic AI-agent conventions (subset of `CLAUDE.md` for non-Claude tools). |
 | `MAP.md` | This file — repo map. |
 | `TTD.md` | Task tracking document (execution plan, phase by phase). |
+| `README.md` | Getting-started guide for Marclie CMS. |
+| `SETUP.md` | Checklist for starting a new project from this template. |
 | `CHANGELOG.md` | Notable changes (Keep a Changelog). |
 | `docs/adr/` | Architecture Decision Records (numbered). |
 | `docs/theming.md` | Theming guide: tokens, dark mode, rebrand. |
 | `docs/rendering.md` | Render strategy: SSG/ISR, revalidation, drafts. |
-| `README.md` | Engine/template readme (from the base template). |
+| `docs/animation.md` | Animation guide: GSAP/three.js wrappers, presets, reduced-motion. |
+| `docs/deployment.md` | Deploy guide: Vercel + Neon migrations + Vercel Blob (ADR 0003). |
 | `.env.example` | Environment variable template. |
 | `.github/workflows/ci.yml` | CI: lint + typecheck on push/PR. |
-| `.agents/skills/`, `.claude/skills/` | Installed AI skills (see CLAUDE.md → Installed skills). |
+| `.agents/skills/` | Installed external AI skills (shadcn, GSAP ×8). |
+| `.claude/skills/` | Claude Code skills: `tailwind-theme-builder`, `add-block`, `create-collection`. See CLAUDE.md → Installed skills. |
 | `package.json` | Scripts + pinned deps. |
 | `next.config.ts` | Next.js config; imports `src/env.ts` for env validation. |
 | `tsconfig.json` | TypeScript (strict). |
@@ -31,10 +36,11 @@
 
 | Path | Responsibility |
 |---|---|
-| `app/(frontend)/` | Public marketing site: `page.tsx` (home), `[slug]`, `posts/`, `search/`, sitemaps, preview routes. `globals.css` = **design tokens** (Tailwind v4 `@theme`; see `docs/theming.md`). |
+| `app/(frontend)/` | Public marketing site: `page.tsx` (home), `[slug]` (CMS pages: about/services/portfolio/contact…), `posts/`, `projects/[slug]` (portfolio detail), `search/`, sitemaps, preview routes. `globals.css` = **design tokens** (Tailwind v4 `@theme`; see `docs/theming.md`). |
 | `app/(payload)/` | **CMS admin + API — core, do not edit.** `admin/[[...segments]]`, `api/`, GraphQL. |
 | `payload.config.ts` | ⭐ Central CMS config: db adapter, collections, globals, plugins, editor. |
 | `env.ts` | Env schema (zod + @t3-oss/env-nextjs). |
+| `migrations/` | Engine DB migrations (committed; applied on deploy via `pnpm migrate`). No auto-push in prod. See `migrations/README.md`. |
 | `seed.ts` | CLI seed runner (`pnpm seed`) — loads demo content via tsx. |
 | `collections/` | CMS collections: `Pages`, `Posts`, `Projects` (portfolio), `Categories`, `Media`, `Users`. |
 | `blocks/` | Layout-builder blocks + their React components. `RenderBlocks.tsx` = block registry. |
@@ -42,10 +48,11 @@
 | `Header/`, `Footer/` | Global nav config + components. |
 | `plugins/index.ts` | CMS plugin wiring (seo, redirects, nested-docs, search, form-builder). |
 | `components/` | Shared UI. `ui/` = shadcn primitives; `RichText/` = Lexical renderer; `Media/`, `Link/`, `Card/`, etc. |
+| `components/animations/` | Isolated animation wrappers (GSAP + three.js/R3F): `AnimateIn`, `Parallax`, `Hero3D` (lazy WebGL), `useReducedMotion`, `gsap.ts` (plugin registry). Guide: `docs/animation.md`. |
 | `providers/` | React providers. `Theme/` = light/dark (theme tokens + selector). |
 | `fields/` | Reusable field configs (`link`, `linkGroup`, `defaultLexical`). |
 | `hooks/` | Collection/field hooks (revalidation, populate). |
-| `endpoints/seed/` | Seed data (sample pages, posts, media). |
+| `endpoints/seed/` | Seed data (home, about, services, portfolio, contact pages; posts; `projects-data.ts`; media; nav). `lexical.ts` = rich-text helpers for seed content. |
 | `access/` | Access-control helpers (`anyone`, `authenticated`, `authenticatedOrPublished`). |
 | `utilities/` | Helpers (URLs, meta, formatting, `cn`, etc.). |
 | `search/` | Search plugin sync/field overrides + component. |
