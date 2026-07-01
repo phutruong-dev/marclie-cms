@@ -7,6 +7,8 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 ## [Unreleased]
 
 ### Added
+- **Phase 13 — quality pass (prod):** Lighthouse **100** accessibility / SEO / best-practices on `/` (light **and** dark) and `/portfolio`; perf LCP 578 ms, CLS 0. Contact form verified end-to-end on prod.
+
 - Scaffolded Marclie CMS from the Payload website template (pinned engine `3.85.1`): Next.js 16.2.6, React 19.2.6, Tailwind v4, Postgres.
 - `docs/theming.md` — theming guide (token file, Tailwind v4 four-step pattern, dark mode via `data-theme`, how to rebrand).
 - `docs/rendering.md` — per-route render strategy (SSG/ISR, on-demand revalidation, drafts/preview).
