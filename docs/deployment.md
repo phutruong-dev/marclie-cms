@@ -10,7 +10,7 @@ How Marclie CMS is deployed and what is prepared in the repo vs. done in the das
 
 ## Build & migrations
 - Postgres adapter auto-pushes schema in **dev** (`NODE_ENV !== production`) and is **off in production** by default → prod uses committed migrations.
-- **Vercel build command:** `pnpm ci` → `payload migrate && pnpm build`. Pending migrations apply before each production/preview build.
+- **Vercel build command:** `pnpm run vercel-build` → `payload migrate && pnpm build`. Pending migrations apply before each production/preview build.
 - Migration scripts:
   ```bash
   pnpm migrate          # apply pending migrations
@@ -41,11 +41,11 @@ Set in Vercel (Neon/Blob integrations inject some automatically):
 ## Repo-side vs. dashboard-side (Phase 12)
 **Done in the repo (this pass):**
 - Vercel Blob plugin + `next/image` remote pattern + `BLOB_READ_WRITE_TOKEN` env.
-- Migration scripts, `migrationDir`, and the `pnpm ci` deploy build command.
+- Migration scripts, `migrationDir`, and the `pnpm run vercel-build` deploy build command.
 - CI Postgres-backed integration + gated build job.
 
 **Still dashboard/DB-side (interactive):**
-- Connect the repo to Vercel; set the build command to `pnpm ci`.
+- Connect the repo to Vercel; set the build command to `pnpm run vercel-build`.
 - Provision Neon via the Vercel Marketplace (branch-per-preview) + add a Blob store.
 - Generate & commit the **baseline migration** against a real DB.
 - Set production env vars; attach a domain; confirm PR → preview deploy + dedicated Neon branch.

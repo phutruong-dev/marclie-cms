@@ -35,7 +35,7 @@ pnpm generate:importmap  # generate the admin import map
 pnpm payload             # CMS engine CLI (migrate, etc.)
 pnpm migrate             # apply pending DB migrations (run on deploy)
 pnpm migrate:create      # generate a migration from the current config (needs a DB)
-pnpm ci                  # deploy build: payload migrate && pnpm build (Vercel build command)
+pnpm run vercel-build    # deploy build: payload migrate && pnpm build (Vercel build command)
 pnpm seed                # reset + load demo content (tsx; sets DISABLE_REVALIDATE=true). Stop the dev server first.
 pnpm test                # test:int + test:e2e
 pnpm test:int            # vitest
@@ -55,7 +55,7 @@ Design tokens live in `src/app/(frontend)/globals.css` (Tailwind v4 `@theme`). D
 Static-first: marketing/CMS pages are SSG with **on-demand revalidation** (engine `afterChange` hooks call `revalidatePath`/`revalidateTag` on publish); `/posts` uses time-based ISR (10 min); `/admin`, `/api`, `/search` are dynamic. Drafts are gated by `authenticatedOrPublished` + `draftMode`. Full guide: `docs/rendering.md`.
 
 ## Deployment
-Vercel + Neon Postgres + Vercel Blob. **Dev auto-pushes schema; prod uses migrations** (`src/migrations/`, applied via `pnpm migrate`) — no auto-push in prod. Vercel build command = `pnpm ci` (`payload migrate && pnpm build`). Media: Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set (prod/preview), local disk otherwise (dev). Generate the baseline migration once with `pnpm migrate:create` before the first prod deploy. Full guide: `docs/deployment.md` (ADR `0003`).
+Vercel + Neon Postgres + Vercel Blob. **Dev auto-pushes schema; prod uses migrations** (`src/migrations/`, applied via `pnpm migrate`) — no auto-push in prod. Vercel build command = `pnpm run vercel-build` (`payload migrate && pnpm build`). Media: Vercel Blob when `BLOB_READ_WRITE_TOKEN` is set (prod/preview), local disk otherwise (dev). Generate the baseline migration once with `pnpm migrate:create` before the first prod deploy. Full guide: `docs/deployment.md` (ADR `0003`).
 
 ## Animation
 Isolated wrappers in `src/components/animations/` (barrel: `@/components/animations`). **GSAP = scroll/timeline**, **three.js/R3F = 3D**. Presets: `AnimateIn` (fade/slide-in on scroll + stagger), `Parallax`, `Hero3D` (lazy, client-only WebGL). All respect `prefers-reduced-motion` via `useReducedMotion`. Import `gsap`/`ScrollTrigger` from `animations/gsap.ts` (registers plugins once); never call GSAP/three during SSR; **always** lazy-load 3D (`next/dynamic` `ssr:false`). Full guide: `docs/animation.md`. ⚠️ R3F's global JSX augmentation breaks polymorphic `as`/`htmlElement` typing → use `React.createElement` (see `AnimateIn`, `components/Media`).

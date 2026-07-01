@@ -29,7 +29,7 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
 - Project-specific Claude Code skills: `.claude/skills/add-block` and `.claude/skills/create-collection`.
 - Phase 12 repo-side prep (ADR `0003`, `docs/deployment.md`):
   - Vercel Blob media storage (`@payloadcms/storage-vercel-blob` 3.85.1) on the `media` collection, token-gated (local dev keeps disk storage); `next/image` remote pattern `*.public.blob.vercel-storage.com`; `BLOB_READ_WRITE_TOKEN` in `env.ts` + `.env.example`.
-  - Migration workflow: `migrate`/`migrate:create`/`migrate:status` scripts, explicit `migrationDir: src/migrations/`, `src/migrations/README.md`, and a `ci` deploy build command (`payload migrate && pnpm build`).
+  - Migration workflow: `migrate`/`migrate:create`/`migrate:status` scripts, explicit `migrationDir: src/migrations/`, `src/migrations/README.md`, and a `vercel-build` deploy build command (`payload migrate && pnpm build`).
   - CI `integration` job (Postgres 16 service → migrate → int tests → build; production build gated on a committed baseline migration).
 
 ### Changed

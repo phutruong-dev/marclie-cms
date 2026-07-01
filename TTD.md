@@ -185,12 +185,12 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 
 **Repo-side prep ✅ DONE (2026-07-01)** — see ADR `0003` + `docs/deployment.md`:
 - [x] **Vercel Blob** for media — `@payloadcms/storage-vercel-blob` (3.85.1) on `media`, token-gated (`enabled: Boolean(BLOB_READ_WRITE_TOKEN)`); local dev unchanged (disk). `next/image` remotePattern `*.public.blob.vercel-storage.com`; `BLOB_READ_WRITE_TOKEN` in `env.ts` + `.env.example`
-- [x] **Migrations on deploy, no auto-push in prod** — adapter push off in prod by default; explicit `migrationDir: src/migrations/`; scripts `migrate`/`migrate:create`/`migrate:status`; **Vercel build command `pnpm ci`** = `payload migrate && pnpm build`
+- [x] **Migrations on deploy, no auto-push in prod** — adapter push off in prod by default; explicit `migrationDir: src/migrations/`; scripts `migrate`/`migrate:create`/`migrate:status`; **Vercel build command `pnpm run vercel-build`** = `payload migrate && pnpm build`
 - [x] **Extend CI** — new `integration` job: `postgres:16` service → `pnpm migrate` → `pnpm test:int` → `pnpm build` (build gated on a committed migration existing → CI green now, self-activates after baseline)
 - [x] Verified: `pnpm generate:types` (config loads incl. Blob plugin) + `pnpm typecheck` + `pnpm lint` (0 err)
 
 **Dashboard/DB-side ⏳ (interactive — needs Vercel/Neon login):**
-- [ ] Connect the repo to Vercel; set build command = `pnpm ci`
+- [ ] Connect the repo to Vercel; set build command = `pnpm run vercel-build`
 - [ ] **Neon Postgres via the Vercel Marketplace** (auto-injected env, branch-per-preview)
 - [ ] Add a **Vercel Blob** store (injects `BLOB_READ_WRITE_TOKEN`)
 - [ ] **Generate & commit the baseline migration** (`pnpm migrate:create` against a fresh DB — see `src/migrations/README.md`)

@@ -4,7 +4,7 @@ Engine (Payload) schema migrations, committed to git and run on deploy.
 
 ## How it works
 - **Dev:** the Postgres adapter **auto-pushes** the schema to your Neon dev branch (no migration files needed while iterating). `NODE_ENV !== 'production'`.
-- **Production:** auto-push is **off** by default. Prod applies the migrations in this folder via `pnpm migrate` (wired into the Vercel build command `pnpm ci` → `payload migrate && pnpm build`). This is intentional — no auto-push in prod (TTD Appendix A / Phase 12).
+- **Production:** auto-push is **off** by default. Prod applies the migrations in this folder via `pnpm migrate` (wired into the Vercel build command `pnpm run vercel-build` → `payload migrate && pnpm build`). This is intentional — no auto-push in prod (TTD Appendix A / Phase 12).
 
 ## Generate the baseline migration (one-time, before the first prod deploy)
 Requires a reachable database (a fresh Neon branch is ideal):

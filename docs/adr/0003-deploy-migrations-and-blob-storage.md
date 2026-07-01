@@ -14,7 +14,7 @@ Phase 12 hosts Marclie CMS on Vercel with Neon Postgres. Two production concerns
 ### 1. Migrations run on deploy; no auto-push in prod
 - The Postgres adapter disables `push` automatically when `NODE_ENV=production`, so prod already relies on committed migrations — we keep that default rather than forcing `push`.
 - `migrationDir` is set explicitly to `src/migrations/` for a stable, tracked path.
-- Scripts: `migrate`, `migrate:create`, `migrate:status`. The Vercel **build command is `pnpm ci`** = `payload migrate && pnpm build`, so pending migrations apply before each production build.
+- Scripts: `migrate`, `migrate:create`, `migrate:status`. The Vercel **build command is `pnpm run vercel-build`** = `payload migrate && pnpm build`, so pending migrations apply before each production build.
 - **Dev keeps auto-push** (fast iteration against a Neon dev branch); migration files are generated with `pnpm migrate:create` only when schema stabilises, then committed.
 - The **baseline migration must be generated once** (`pnpm migrate:create` against a fresh DB) before the first prod deploy — a DB-connected step, tracked in Phase 12.
 
