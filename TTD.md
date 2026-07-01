@@ -196,9 +196,9 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · `[!]` blocked / needs d
 - [x] Set production env (DATABASE_URL prod, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL, PREVIEW_SECRET, CRON_SECRET) via API
 - [x] Deployed: build ran `payload migrate` (applied `20260701_033504_initial`) → `next build`; `/`, `/admin`, `/api/projects` → 200
 - [x] Seeded prod demo content (`pnpm seed` → prod) + redeployed to SSG the populated DB; `/api/projects` totalDocs 3
-- [ ] **Vercel Blob** store (injects `BLOB_READ_WRITE_TOKEN`) — deferred (media uploads in prod won't persist until added)
+- [x] **Vercel Blob** store `marclie-cms-media` (`store_hlslN6ZTzjo1gnz9`) created + connected via API → injects `BLOB_READ_WRITE_TOKEN` (prod/preview/dev). Re-seeded prod with Blob enabled (32 files on Blob); media serves via the Payload route + `next/image` (q=100 per `next.config` `qualities:[100]`) → 200.
 - [ ] **Branch-per-preview** via Neon–Vercel integration — deferred (chose a separate prod project over Marketplace for now)
-- [ ] Attach a custom domain — deferred
+- [ ] Attach a custom domain — deferred (using `marclie-cms.vercel.app`)
 
 **Learnings (important):**
 - `pnpm ci` does **not** run a `ci` script (pnpm reserves `ci` → `ERR_PNPM_CI_NOT_IMPLEMENTED`); the deploy script is named **`vercel-build`** and the build command is `pnpm run vercel-build`.

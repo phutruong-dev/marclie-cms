@@ -32,7 +32,8 @@ and the project aims to follow [Conventional Commits](https://www.conventionalco
   - Dedicated empty Neon prod project `marclie-cms-prod`; baseline migration applied on deploy; demo content seeded.
   - `.github/workflows/generate-baseline-migration.yml` — one-shot workflow that generates the baseline migration on **Node 22** (`migrate:create` fails on Node 24 via tsx+drizzle-kit).
   - Renamed the deploy script `ci` → `vercel-build` (`pnpm ci` is a pnpm builtin and never ran the script); removed the unused `@swc-node/register` dev-dep.
-  - Deferred: Vercel Blob store, Neon branch-per-preview, custom domain.
+  - Vercel Blob store `marclie-cms-media` created + connected (injects `BLOB_READ_WRITE_TOKEN`); prod re-seeded with Blob enabled so media (32 files) is served from Blob.
+  - Deferred: Neon branch-per-preview, custom domain.
 - Phase 12 repo-side prep (ADR `0003`, `docs/deployment.md`):
   - Vercel Blob media storage (`@payloadcms/storage-vercel-blob` 3.85.1) on the `media` collection, token-gated (local dev keeps disk storage); `next/image` remote pattern `*.public.blob.vercel-storage.com`; `BLOB_READ_WRITE_TOKEN` in `env.ts` + `.env.example`.
   - Migration workflow: `migrate`/`migrate:create`/`migrate:status` scripts, explicit `migrationDir: src/migrations/`, `src/migrations/README.md`, and a `vercel-build` deploy build command (`payload migrate && pnpm build`).
